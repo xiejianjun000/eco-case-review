@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 消息气泡样式 */
+.message-bubble {
+  @apply rounded-xl px-4 py-3 max-w-[80%];
+}
+
+.message-bubble.user {
+  @apply bg-primary-500 text-white ml-auto;
+}
+
+.message-bubble.agent {
+  @apply bg-gray-100 text-gray-800 mr-auto;
+}
+
+/* 进度条动画 */
+@keyframes progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.progress-bar {
+  animation: progress 2s ease-in-out infinite;
+}
+
+/* 智能体卡片悬停效果 */
+.agent-card {
+  @apply transition-all duration-300 cursor-pointer;
+}
+
+.agent-card:hover {
+  @apply transform -translate-y-1 shadow-lg;
+}
+
+/* 标签样式 */
+.tag {
+  @apply px-2 py-0.5 text-xs rounded-full;
+}
+
+.tag.success {
+  @apply bg-green-100 text-green-700;
+}
+
+.tag.warning {
+  @apply bg-yellow-100 text-yellow-700;
+}
+
+.tag.danger {
+  @apply bg-red-100 text-red-700;
+}
+
+.tag.info {
+  @apply bg-blue-100 text-blue-700;
+}

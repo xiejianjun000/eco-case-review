@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: v4-review-config
+  namespace: chatlaw
+  labels:
+    app: v4-review
+    version: v4.0.0
+data:
+  # ---- 应用配置 ----
+  OCR_ENGINE: "local"
+  MAX_PDF_SIZE: "50"
+  MAX_PAGES: "500"
+  LOG_LEVEL: "INFO"
+  TZ: "Asia/Shanghai"
+  # ---- 基础设施配置 ----
+  REDIS_URL: "redis://v4-redis:6379/0"
+  DATABASE_URL: "postgresql://v4user:PLACEHOLDER_DB_PASSWORD@v4-postgres:5432/v4review"
+  # ---- Gunicorn 配置 ----
+  WORKERS: "4"
+  THREADS: "2"
+  TIMEOUT: "120"
+  # ---- 应用配置文件（可选）----
+  app-config.yaml: |
+    server:
+      host: 0.0.0.0
+      port: 8000
+      workers: 4
+    ocr:
+      engine: local
+      timeout: 60
+    review:
+      max_pdf_size_mb: 50
+      max_pages: 500
+      batch_size: 10
+    cache:
+      ttl: 3600
+      max_size: 1000

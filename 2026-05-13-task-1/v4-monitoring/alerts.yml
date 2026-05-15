@@ -1,0 +1,26 @@
+groups:
+  - name: v4_review_alerts
+    rules:
+      - alert: ServiceDown
+        expr: up{job="v4-review-system"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "V4评查服务不可用"
+
+      - alert: LowSuccessRate
+        expr: rate(v4_review_success_total[5m]) / rate(v4_review_total[5m]) < 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "评查成功率低于50%"
+
+      - alert: HighProcessingTime
+        expr: histogram_quantile(0.95, rate(v4_review_duration_seconds_bucket[5m])) > 60
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "95%请求处理时间超过60秒"

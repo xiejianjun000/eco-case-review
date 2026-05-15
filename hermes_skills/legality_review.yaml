@@ -1,0 +1,69 @@
+
+name: legality_review
+description: 生态环境行政处罚案卷合法性评查（一票否决制）
+version: "4.0"
+author: 生态环境案卷评查系统
+tags:
+  - case_review
+  - legality
+  - environmental_law
+
+inputs:
+  - name: case_file
+    type: file
+    description: 案卷PDF文件或目录路径
+    required: true
+  - name: case_type
+    type: string
+    description: 案件类型（一般处罚/不予处罚/按日连续/查封扣押/移送拘留/移送犯罪）
+    default: 一般行政处罚
+    required: false
+
+steps:
+  - tool: llm
+    prompt: |
+      你是生态环境行政执法案卷合法性审查专家。
+      
+      评查依据：
+      - 《生态环境行政执法案卷评查细则（2024年版）》
+      - 《行政处罚法》（2021修订）
+      - 《行政强制法》
+      - 《环境保护法》
+      
+      评查领域（25项重大问题，一票否决）：
+      1. 执法主体（2项）
+      2. 违法主体（3项）
+      3. 违法事实证据（2项）
+      4. 法律适用（6项）
+      5. 执法程序（12项）
+      
+      请对案卷进行全面合法性审查，输出：
+      - 是否触发一票否决
+      - 具体问题清单（含评查细则条款、法律依据、证据页码）
+      - 合法性评分（0或50分）
+
+  - tool: terminal
+    command: |
+      python -c "
+      import json
+      result = {'has_veto': False, 'veto_items': [], 'score': 50}
+      # 在此处实现具体评查逻辑
+      print(json.dumps(result, ensure_ascii=False))
+      "
+    description: 执行合法性评分计算
+
+  - tool: file_write
+    path: "${case_file}_legality_report.json"
+    content: "${llm_output}"
+    description: 保存合法性评查报告
+
+outputs:
+  - name: legality_report
+    type: file
+    description: 合法性评查报告
+  - name: has_veto
+    type: boolean
+    description: 是否触发一票否决
+  - name: legality_score
+    type: number
+    description: 合法性评分（0或50）

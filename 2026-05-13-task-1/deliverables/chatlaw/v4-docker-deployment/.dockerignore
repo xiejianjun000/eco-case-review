@@ -1,0 +1,24 @@
+# Docker 镜像忽略文件
+.git
+.gitignore
+.trivy.yml
+.trivyignore
+docker-compose*.yml
+k8s/
+deploy.sh
+rollback.sh
+deployment-checklist.md
+README.md
+__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+htmlcov
+.coverage
+.env
+.env.*
+*.md
+.vscode
+.idea
+tests/
+scripts/dev/

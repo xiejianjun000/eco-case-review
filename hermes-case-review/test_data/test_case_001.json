@@ -1,0 +1,33 @@
+{
+  "case_id": "test_case_001",
+  "case_number": "某市环罚〔2024〕001号",
+  "case_name": "某公司超标排放大气污染物案",
+  "case_type": "一般行政处罚",
+  "respondent": "某某化工有限公司",
+  "organizing_unit": "某市生态环境局",
+  "violation": "超标排放大气污染物",
+  "penalty_decision": "罚款人民币50万元",
+  
+  "legality_review": {
+    "has_veto": false,
+    "veto_items": [],
+    "legality_score": 50,
+    "legality_pass": true,
+    "findings": []
+  },
+  
+  "normative_review": {
+    "document_score": 85,
+    "document_standard": 100,
+    "basic_elements_deduction": 3,
+    "normative_score": 39.5,
+    "findings": [
+      "现场检查笔录缺少一名执法人员签名",
+      "调查询问笔录中当事人联系方式不完整"
+    ]
+  },
+  
+  "comprehensive_score": 89.5,
+  "comprehensive_grade": "良好",
+  "comprehensive_pass": true
+}

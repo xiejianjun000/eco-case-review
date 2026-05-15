@@ -1,0 +1,124 @@
+"""
+HERMES 技能：合法性评查
+
+使用方式:
+hermes -s legality_review --input case_file=./case.pdf
+"""
+name: legality_review
+description: 生态环境行政处罚案卷合法性评查（一票否决制）
+version: "4.0"
+author: 生态环境案卷评查系统
+tags:
+  - case_review
+  - legality
+  - environmental_law
+
+inputs:
+  - name: case_file
+    type: file
+    description: 案卷PDF文件或目录路径
+    required: true
+  - name: case_type
+    type: string
+    description: 案件类型
+    default: 一般行政处罚
+    options:
+      - 一般行政处罚
+      - 不予行政处罚
+      - 按日连续处罚
+      - 查封扣押
+      - 移送拘留
+      - 移送涉嫌环境污染犯罪
+
+steps:
+  - tool: file_read
+    path: "${case_file}"
+    description: 读取案卷文件
+
+  - tool: llm
+    model: "${HERMES_MODEL}"
+    prompt: |
+      你是生态环境行政执法案卷合法性审查专家。
+      
+      评查依据：
+      - 《生态环境行政执法案卷评查细则（2024年版）》
+      - 《行政处罚法》（2021修订）
+      - 《行政强制法》
+      - 《环境保护法》
+      
+      评查领域（25项重大问题，一票否决）：
+      1. 执法主体（2项）
+         - 序号1: 实施机关超出法定职权、管辖范围实施行政处罚
+         - 序号2: 执法人员不具有行政执法资格，或少于两人
+      
+      2. 违法主体（3项）
+         - 序号3: 违法主体不清
+         - 序号4: 处罚对象错误
+         - 序号5: 事实与证据不符
+      
+      3. 违法事实证据（2项）
+         - 序号6: 证据不足
+         - 序号7: 未核实主观过错
+      
+      4. 法律适用（6项）
+         - 序号8: 事实描述不符
+         - 序号9: 无法律依据
+         - 序号10: 未准确引用
+         - 序号11: 兜底条款滥用
+         - 序号12: 加重/减轻处罚错误
+         - 序号13: 查封扣押对象错误
+      
+      5. 执法程序（12项）
+         - 序号14: 未告知程序性权利
+         - 序号15: 未对申请作出决定
+         - 序号16: 查封扣押未告知
+         - 序号17: 未经集体讨论
+         - 序号18: 调查人员参与表决
+         - 序号19: 应审核未审核
+         - 序号20: 超过追责期限
+         - 序号21: 调查审查人员混同
+         - 序号22: 未责令改正
+         - 序号23: 未在规定时间复查
+         - 序号24: 处罚决定书时间错误
+         - 序号25: 查封扣押超期
+      
+      请对案卷进行全面合法性审查，输出：
+      - 是否触发一票否决
+      - 具体问题清单（含评查细则条款、法律依据、证据页码）
+      - 合法性评分（0或50分）
+
+  - tool: python
+    script: |
+      # 合法性评分计算
+      has_veto = False  # 根据LLM输出判断
+      
+      if has_veto:
+          legality_score = 0
+      else:
+          legality_score = 50
+      
+      result = {
+          'has_veto': has_veto,
+          'score': legality_score,
+          'veto_items': []
+      }
+      print(result)
+
+  - tool: file_write
+    path: "${case_file}_legality_report.json"
+    content: "${python_output}"
+    description: 保存合法性评查报告
+
+outputs:
+  - name: legality_report
+    type: file
+    description: 合法性评查报告
+  - name: has_veto
+    type: boolean
+    description: 是否触发一票否决
+  - name: legality_score
+    type: number
+    description: 合法性评分（0或50）
+  - name: veto_items
+    type: array
+    description: 否决项编号列表

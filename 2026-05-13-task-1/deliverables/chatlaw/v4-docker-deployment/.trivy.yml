@@ -1,0 +1,17 @@
+# Trivy 容器镜像安全扫描配置
+# 使用方式: trivy config -c .trivy.yml
+# 或扫描镜像: trivy image --config .trivy.yml chatlaw/v4-review:latest
+
+format: table
+exit-code: 1
+severity:
+  - CRITICAL
+  - HIGH
+ignore-unfixed: true
+vulnerability:
+  type:
+    - os
+    - library
+  ignore:
+    # 可在此忽略已知无法修复的漏洞
+    # - CVE-2023-xxxxx

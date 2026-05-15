@@ -1,0 +1,87 @@
+{
+  "dashboard": {
+    "title": "V4评查系统监控仪表盘",
+    "panels": [
+      {
+        "id": 1,
+        "title": "评查统计",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by(result) (v4_review_total)",
+            "legendFormat": "{{result}}"
+          }
+        ],
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8}
+      },
+      {
+        "id": 2,
+        "title": "成功率趋势",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(v4_review_success_total[5m]) / rate(v4_review_total[5m]) * 100",
+            "legendFormat": "成功率 %"
+          }
+        ],
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8}
+      },
+      {
+        "id": 3,
+        "title": "处理时长分布",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(v4_review_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(v4_review_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50"
+          }
+        ],
+        "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8}
+      },
+      {
+        "id": 4,
+        "title": "一票否决率",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "rate(v4_review_total{result=\"veto\"}[5m]) / rate(v4_review_total[5m]) * 100",
+            "legendFormat": "否决率 %"
+          }
+        ],
+        "gridPos": {"x": 12, "y": 8, "w": 6, "h": 8},
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 10},
+                {"color": "red", "value": 20}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "等级分布",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by(level) (v4_review_total{result=\"pass\"})",
+            "legendFormat": "{{level}}"
+          }
+        ],
+        "gridPos": {"x": 18, "y": 8, "w": 6, "h": 8}
+      }
+    ],
+    "refresh": "10s",
+    "version": 1
+  }
+}

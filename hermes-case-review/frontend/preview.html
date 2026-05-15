@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生态环境行政处罚案卷评查系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Source Han Sans SC';
+            src: url('https://fonts.gstatic.com/s/notosanssc/v36/k3kCo84MPvpLmixcA63oeALhLw.woff2') format('woff2');
+            font-weight: 400;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Source Han Sans SC';
+            src: url('https://fonts.gstatic.com/s/notosanssc/v36/k3kXo84MPvpLmixcA63oeALhLw.woff2') format('woff2');
+            font-weight: 700;
+            font-display: swap;
+        }
+        
+        :root {
+            --primary-color: #1a508b;
+            --primary-light: #2d5a87;
+            --primary-dark: #0d3a6b;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --bg-color: #f0f4f8;
+            --sidebar-bg: #ffffff;
+            --content-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            font-family: 'Source Han Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .app-container {
+            display: flex;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+        
+        .header-center {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+            margin: 0 40px;
+        }
+        
+        .search-input {
+            width: 100%;
+            height: 36px;
+            padding: 0 16px 0 40px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: background 0.2s;
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .search-input:focus {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .header-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .header-btn.badge {
+            position: relative;
+        }
+        
+        .header-btn.badge::after {
+            content: '3';
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger-color);
+            border-radius: 50%;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .user-name {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            bottom: 0;
+            width: 220px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+            z-index: 50;
+            overflow: hidden;
+        }
+        
+        .sidebar.collapsed {
+            width: 56px;
+        }
+        
+        .sidebar-toggle {
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 48px;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-size: 12px;
+            z-index: 60;
+        }
+        
+        .sidebar-toggle:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+        
+        .nav-menu {
+            padding: 12px;
+            flex: 1;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item:hover {
+            background: rgba(26, 80, 139, 0.08);
+            color: var(--primary-color);
+        }
+        
+        .nav-item.active {
+            background: rgba(26, 80, 139, 0.15);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-text {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-badge {
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .progress-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+        }
+        
+        .progress-label {
+            font-size: 12px;
+            opacity: 0.85;
+            margin-bottom: 4px;
+        }
+        
+        .progress-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .progress-bar-wrapper {
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: white;
+            border-radius: 3px;
+            width: 67%;
+        }
+        
+        .main-content-wrapper {
+            position: fixed;
+            top: 60px;
+            left: 220px;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            transition: left 0.3s ease;
+        }
+        
+        .main-content-wrapper.sidebar-collapsed {
+            left: 56px;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .panel-left {
+            width: 280px;
+            background: var(--content-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.2s;
+            min-width: 200px;
+            max-width: 360px;
+        }
+        
+        .panel-left-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .panel-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .panel-btn:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .search-box {
+            padding: 12px 16px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            height: 36px;
+            padding: 0 12px 0 36px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .search-box-icon {
+            position: absolute;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .case-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .case-item {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .case-item:hover {
+            background: var(--bg-color);
+        }
+        
+        .case-item.active {
+            background: rgba(26, 80, 139, 0.08);
+            border-left-color: var(--primary-color);
+        }
+        
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+        
+        .case-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .case-status {
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .case-status.completed {
+            background: rgba(34, 197, 94, 0.1);
+            color: #166534;
+        }
+        
+        .case-status.reviewing {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+        }
+        
+        .case-status.pending {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+        }
+        
+        .case-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .case-time {
+            margin-right: 8px;
+        }
+        
+        .case-score {
+            font-weight: 600;
+        }
+        
+        .case-score.excellent {
+            color: var(--success-color);
+        }
+        
+        .case-score.good {
+            color: var(--info-color);
+        }
+        
+        .case-score.fail {
+            color: var(--danger-color);
+        }
+        
+        .resizer {
+            width: 6px;
+            background: var(--border-color);
+            cursor: col-resize;
+            transition: background 0.2s;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .resizer:hover {
+            background: var(--primary-color);
+        }
+        
+        .resizer::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: transparent;
+        }
+        
+        .panel-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-color);
+            min-width: 300px;
+        }
+        
+        .chat-header {
+            padding: 16px 20px;
+            background: var(--content-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .chat-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .chat-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .online-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 9999px;
+            font-size: 12px;
+            color: #166534;
+        }
+        
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse-green 2s infinite;
+        }
+        
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .btn-primary {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 80, 139, 0.3);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            max-width: 80%;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+        }
+        
+        .message.agent {
+            align-self: flex-start;
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+        
+        .message.agent .message-avatar {
+            background: rgba(26, 80, 139, 0.1);
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        
+        .message-sender {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .message.user .message-sender {
+            color: var(--primary-color);
+        }
+        
+        .message.agent .message-sender {
+            color: var(--text-primary);
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.65;
+            word-break: break-all;
+        }
+        
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.agent .message-bubble {
+            background: var(--content-bg);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+            color: var(--text-primary);
+        }
+        
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 8px;
+        }
+        
+        .message-action {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .message-action:hover {
+            color: var(--primary-color);
+            background: rgba(26, 80, 139, 0.08);
+        }
+        
+        .message-action.like:hover {
+            color: var(--success-color);
+        }
+        
+        .message-action.dislike:hover {
+            color: var(--danger-color);
+        }
+        
+        .chat-input-area {
+            padding: 16px 20px;
+            background: var(--content-bg);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .chat-tools {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .tool-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+        
+        .tool-btn:hover {
+            background: rgba(26, 80, 139, 0.08);
+            border-color: var(--primary-color);
+        }
+        
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-left: 8px;
+        }
+        
+        .model-selector select {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            outline: none;
+            color: var(--text-primary);
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .chat-input {
+            flex: 1;
+            height: 44px;
+            padding: 0 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+        
+        .chat-input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .send-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 80, 139, 0.3);
+        }
+        
+        .panel-right {
+            width: 360px;
+            background: var(--content-bg);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s;
+            position: relative;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+        
+        .panel-right.collapsed {
+            width: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .panel-right.collapsed .panel-right-content {
+            display: none;
+        }
+        
+        .panel-right-toggle {
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 48px;
+            background: var(--content-bg);
+            border: 1px solid var(--border-color);
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-size: 12px;
+            z-index: 10;
+        }
+        
+        .panel-right-toggle:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+        
+        .panel-right-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-right-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .right-panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .right-panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .accordion-section {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .accordion-header {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .accordion-header:hover {
+            background: var(--bg-color);
+        }
+        
+        .accordion-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .accordion-icon {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+        
+        .accordion-icon.expanded {
+            transform: rotate(180deg);
+        }
+        
+        .accordion-content {
+            padding: 0 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .accordion-content.expanded {
+            max-height: 600px;
+            padding: 16px;
+        }
+        
+        .pdf-preview-area {
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+        
+        .pdf-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        
+        .pdf-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        .pdf-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            width: 100%;
+        }
+        
+        .pdf-nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        
+        .pdf-nav-btn:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+        
+        .pdf-page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .progress-step-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .step-indicator {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+        
+        .step-indicator.completed {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .step-indicator.running {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .step-indicator.pending {
+            background: var(--border-color);
+            color: var(--text-muted);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .step-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .mini-progress-bar {
+            height: 6px;
+            background: var(--bg-color);
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .mini-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            border-radius: 3px;
+            animation: progress-flow 2s ease-in-out infinite;
+        }
+        
+        @keyframes progress-flow {
+            0% { width: 30%; }
+            50% { width: 55%; }
+            100% { width: 30%; }
+        }
+        
+        .control-btns {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .control-btn.pause {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+        }
+        
+        .control-btn.pause:hover {
+            background: rgba(245, 158, 11, 0.2);
+        }
+        
+        .control-btn.continue {
+            background: linear-gradient(135deg, var(--success-color) 0%, #16a34a 100%);
+            color: white;
+        }
+        
+        .control-btn.continue:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .report-card {
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .report-score {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .score-value {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+        
+        .score-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        
+        .score-grade {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--success-color);
+            margin-top: 8px;
+        }
+        
+        .report-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .stat-item {
+            background: var(--content-bg);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .download-btns {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .download-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .download-btn.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .agents-status-section {
+            padding: 16px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .agents-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .agent-status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+        
+        .agent-status-item.running {
+            background: rgba(34, 197, 94, 0.08);
+        }
+        
+        .agent-status-item.waiting {
+            background: rgba(245, 158, 11, 0.08);
+        }
+        
+        .agent-status-item.idle {
+            background: var(--bg-color);
+        }
+        
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .agent-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .agent-dot.green {
+            background: var(--success-color);
+        }
+        
+        .agent-dot.yellow {
+            background: var(--warning-color);
+        }
+        
+        .agent-dot.gray {
+            background: var(--text-muted);
+        }
+        
+        .agent-name {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        
+        .agent-status-text {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+        
+        .agent-status-text.running {
+            background: rgba(34, 197, 94, 0.2);
+            color: #166534;
+        }
+        
+        .agent-status-text.waiting {
+            background: rgba(245, 158, 11, 0.2);
+            color: #92400e;
+        }
+        
+        .agent-status-text.idle {
+            background: rgba(107, 114, 128, 0.2);
+            color: #4b5563;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--content-bg);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .modal-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .modal-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        
+        .btn-secondary {
+            padding: 10px 20px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(26, 80, 139, 0.08);
+        }
+        
+        @media (max-width: 1200px) {
+            .panel-right {
+                width: 320px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 56px;
+            }
+            
+            .main-content-wrapper {
+                left: 56px;
+            }
+            
+            .panel-left {
+                width: 200px;
+            }
+            
+            .panel-right {
+                width: 0;
+                overflow: hidden;
+            }
+            
+            .panel-right-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay show" id="welcomeModal">
+        <div class="modal-content">
+            <div class="modal-icon">⚖️</div>
+            <h2 class="modal-title">生态环境行政处罚案卷评查系统</h2>
+            <p class="modal-desc">
+                欢迎使用 HERMES 智能评查系统！<br>
+                本系统集成了6个专业智能体，能够自动完成案卷合法性审查、规范性评分、证据链分析等工作。
+            </p>
+            <div class="modal-btns">
+                <button class="btn-secondary" onclick="closeModal()">📖 查看文档</button>
+                <button class="btn-primary" onclick="closeModal()">🚀 开始使用</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-wrapper">
+                <div class="logo-icon">⚖️</div>
+                <span class="logo-text">案卷评查系统</span>
+            </div>
+        </div>
+        <div class="header-center">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="搜索案卷编号、案件名称...">
+        </div>
+        <div class="header-right">
+            <div class="header-btn" title="设置">⚙️</div>
+            <div class="header-btn badge" title="通知">🔔</div>
+            <div class="user-info">
+                <div class="user-avatar">张</div>
+                <span class="user-name">张三</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">▶</div>
+        <div class="nav-menu">
+            <div class="nav-item" onclick="loadPage('dashboard')">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">数据看板</span>
+            </div>
+            <div class="nav-item active" onclick="loadPage('review')">
+                <span class="nav-icon">💬</span>
+                <span class="nav-text">审查交流</span>
+                <span class="nav-badge">3</span>
+            </div>
+            <div class="nav-item" onclick="loadPage('experts')">
+                <span class="nav-icon">👥</span>
+                <span class="nav-text">专家团队</span>
+            </div>
+            <div class="nav-item" onclick="loadPage('skills')">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-text">技能广场</span>
+            </div>
+            <div class="nav-item" onclick="loadPage('knowledge')">
+                <span class="nav-icon">📖</span>
+                <span class="nav-text">知识库</span>
+            </div>
+            <div class="nav-item" onclick="loadPage('cases')">
+                <span class="nav-icon">📁</span>
+                <span class="nav-text">案卷管理</span>
+            </div>
+            <div class="nav-item" onclick="loadPage('settings')">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">配置管理</span>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="progress-card">
+                <div class="progress-label">今日评查进度</div>
+                <div class="progress-value">8 / 12</div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content-wrapper" id="mainContent">
+        <div class="main-content" id="mainContentInner">
+            <div class="panel-left" id="panelLeft">
+                <div class="panel-left-header">
+                    <span class="panel-title">审查记录</span>
+                    <div class="panel-actions">
+                        <div class="panel-btn" title="新建">➕</div>
+                        <div class="panel-btn" title="刷新">🔄</div>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <span class="search-box-icon">🔍</span>
+                    <input type="text" placeholder="搜索案卷...">
+                </div>
+                <div class="case-list" id="caseList">
+                </div>
+            </div>
+            
+            <div class="resizer" id="leftResizer" onmousedown="startResize('left')"></div>
+            
+            <div class="panel-center" id="panelCenter">
+                <div class="chat-header">
+                    <div>
+                        <div class="chat-title">审查交流</div>
+                        <div class="chat-subtitle">与智能体协作完成案卷评查</div>
+                    </div>
+                    <div class="chat-status">
+                        <span class="online-badge">
+                            <span class="online-dot"></span>
+                            6个智能体在线
+                        </span>
+                        <button class="btn-primary" onclick="startReview()">开始评查</button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                </div>
+                <div class="chat-input-area">
+                    <div class="chat-tools">
+                        <div class="tool-btn" title="上传文件">📎</div>
+                        <div class="tool-btn" title="语音输入">🎙️</div>
+                        <div class="tool-btn" title="语音识别">🔊</div>
+                        <div class="model-selector">
+                            <span>🤖</span>
+                            <select>
+                                <option>DeepSeek-V3</option>
+                                <option>GLM-4</option>
+                                <option>GPT-4o</option>
+                            </select>
+                        </div>
+                        <div class="tool-btn" title="模板">📝</div>
+                    </div>
+                    <div class="chat-input-wrapper">
+                        <textarea class="chat-input" placeholder="输入消息... 支持 @智能体单独对话" rows="1" onkeydown="handleInputKey(event)"></textarea>
+                        <button class="send-btn" onclick="sendMessage()">发送</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="resizer" id="rightResizer" onmousedown="startResize('right')"></div>
+            
+            <div class="panel-right" id="panelRight">
+                <div class="panel-right-toggle" id="panelRightToggle" onclick="toggleRightPanel()">◀</div>
+                <div class="panel-right-content">
+                    <div class="panel-right-header">
+                        <span class="right-panel-title">审查详情</span>
+                        <div class="right-panel-actions">
+                            <div class="panel-btn" title="刷新">🔄</div>
+                            <div class="panel-btn" title="设置">⚙️</div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-section">
+                        <div class="accordion-header" onclick="toggleAccordion('pdf')">
+                            <span class="accordion-title">📄 案卷预览</span>
+                            <span class="accordion-icon" id="pdfIcon">▼</span>
+                        </div>
+                        <div class="accordion-content expanded" id="pdfContent">
+                            <div class="pdf-preview-area">
+                                <span class="pdf-icon">📄</span>
+                                <div class="pdf-text">案卷PDF预览区域</div>
+                                <div class="pdf-text" style="font-size: 12px; margin-top: 4px;">第 3 / 23 页</div>
+                            </div>
+                            <div class="pdf-nav">
+                                <button class="pdf-nav-btn">◀</button>
+                                <span class="pdf-page-info">第 3 页</span>
+                                <button class="pdf-nav-btn">▶</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-section">
+                        <div class="accordion-header" onclick="toggleAccordion('progress')">
+                            <span class="accordion-title">⚡ 审查进度</span>
+                            <span class="accordion-icon" id="progressIcon">▼</span>
+                        </div>
+                        <div class="accordion-content expanded" id="progressContent">
+                            <div id="progressSteps">
+                            </div>
+                            <div class="control-btns">
+                                <button class="control-btn pause" onclick="pauseReview()">⏸️ 暂停</button>
+                                <button class="control-btn continue" onclick="continueReview()">▶️ 继续</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-section">
+                        <div class="accordion-header" onclick="toggleAccordion('report')">
+                            <span class="accordion-title">📋 评查报告</span>
+                            <span class="accordion-icon" id="reportIcon">▼</span>
+                        </div>
+                        <div class="accordion-content" id="reportContent">
+                            <div class="report-card">
+                                <div class="report-score">
+                                    <div class="score-value">89.5</div>
+                                    <div class="score-label">综合得分</div>
+                                    <div class="score-grade">优秀</div>
+                                </div>
+                                <div class="report-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value">50</div>
+                                        <div class="stat-label">合法性</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">39.5</div>
+                                        <div class="stat-label">规范性</div>
+                                    </div>
+                                </div>
+                                <div class="download-btns">
+                                    <button class="download-btn primary">📥 PDF导出</button>
+                                    <button class="download-btn">📥 Word导出</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="agents-status-section">
+                        <div class="agents-title">🕐 智能体状态</div>
+                        <div id="agentsStatus">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const caseData = [
+            { id: '1', number: '案卷2024-001', status: 'completed', time: '10分钟前', score: 89.5, scoreLevel: 'excellent' },
+            { id: '2', number: '案卷2024-002', status: 'reviewing', time: '25分钟前', score: null, scoreLevel: null },
+            { id: '3', number: '案卷2024-003', status: 'reviewing', time: '1小时前', score: null, scoreLevel: null },
+            { id: '4', number: '案卷2024-089', status: 'completed', time: '昨天', score: 76.5, scoreLevel: 'good' },
+            { id: '5', number: '案卷2024-088', status: 'completed', time: '昨天', score: 92.3, scoreLevel: 'excellent' },
+            { id: '6', number: '案卷2024-087', status: 'completed', time: '2天前', score: 58.0, scoreLevel: 'fail' },
+            { id: '7', number: '案卷2024-086', status: 'pending', time: '3天前', score: null, scoreLevel: null },
+            { id: '8', number: '案卷2024-085', status: 'completed', time: '1周前', score: 85.2, scoreLevel: 'excellent' },
+        ];
+        
+        const messageData = [
+            { type: 'agent', sender: '综合评估师', avatar: '📊', time: '14:30', content: '<strong>您好！我是您的智能评查助手，请问需要我帮您审查哪个案卷？</strong>', likes: 12, dislikes: 1 },
+            { type: 'user', sender: '我', avatar: '👤', time: '14:32', content: '请帮我审查案卷2024-001', likes: 0, dislikes: 0 },
+            { type: 'agent', sender: '综合评估师', avatar: '📊', time: '14:32', content: '<strong>好的，正在启动评查流程...</strong><br><br><strong>审查进度：</strong><ul style="margin-top: 8px; padding-left: 20px;"><li>✅ 文件解析完成（23页PDF）</li><li>⚡ 合法性审查中（12/25项）</li><li>⏳ 规范性审查等待中</li></ul><br><em>预计完成时间：约3分钟</em>', likes: 5, dislikes: 0 },
+            { type: 'agent', sender: '合法性审查员', avatar: '✅', time: '14:33', content: '<strong>合法性审查发现问题：</strong><br><br><strong>问题1：</strong>证据清单第5项缺少取证时间记录<br><strong>问题2：</strong>调查笔录签名日期与实际调查日期不符<br><br>已标记为待核实项，请人工确认。', likes: 8, dislikes: 0 },
+            { type: 'agent', sender: '文书审计员', avatar: '📝', time: '14:34', content: '<strong>文书格式审查结果：</strong><br><br>✓ 行政处罚决定书格式正确<br>✓ 送达回证要素齐全<br>⚠️ 听证告知书编号格式不规范（建议统一为X环罚听告〔2024〕XX号）', likes: 3, dislikes: 1 },
+        ];
+        
+        const progressSteps = [
+            { id: '1', title: '文件解析', status: 'completed', info: '已完成 · 耗时: 0.5s', color: '#166534' },
+            { id: '2', title: '合法性审查', status: 'running', info: '12 / 25 项 · 当前检查: 序号3-违法主体不清', color: 'var(--primary-color)' },
+            { id: '3', title: '规范性审查', status: 'pending', info: '等待中', color: '#6b7280' },
+            { id: '4', title: '裁量基准计算', status: 'pending', info: '等待中', color: '#6b7280' },
+            { id: '5', title: '证据链分析', status: 'pending', info: '等待中', color: '#6b7280' },
+            { id: '6', title: '综合报告生成', status: 'pending', info: '等待中', color: '#6b7280' },
+        ];
+        
+        const agentsData = [
+            { id: '1', name: '合法性审查员', status: 'running', statusText: '运行中', statusColor: 'green' },
+            { id: '2', name: '规范性审查员', status: 'waiting', statusText: '等待', statusColor: 'yellow' },
+            { id: '3', name: '裁量计算师', status: 'waiting', statusText: '等待', statusColor: 'yellow' },
+            { id: '4', name: '证据分析师', status: 'idle', statusText: '空闲', statusColor: 'gray' },
+            { id: '5', name: '文书审计员', status: 'running', statusText: '运行中', statusColor: 'green' },
+            { id: '6', name: '综合评估师', status: 'idle', statusText: '空闲', statusColor: 'gray' },
+        ];
+        
+        function renderCaseList() {
+            const container = document.getElementById('caseList');
+            container.innerHTML = caseData.map((item, index) => `
+                <div class="case-item ${index === 0 ? 'active' : ''}" data-case-id="${item.id}" onclick="selectCase(${item.id})">
+                    <div class="case-header">
+                        <span class="case-number">${item.number}</span>
+                        <span class="case-status ${item.status}">${getStatusText(item.status)}</span>
+                    </div>
+                    <div class="case-info">
+                        <span class="case-time">${item.time}</span>
+                        ${item.score !== null ? `<span class="case-score ${item.scoreLevel}">${item.score}</span>` : '<span class="case-score">-</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getStatusText(status) {
+            const map = { completed: '已完成', reviewing: '审查中', pending: '待处理' };
+            return map[status] || status;
+        }
+        
+        function renderMessages() {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = messageData.map(msg => `
+                <div class="message ${msg.type}">
+                    <div class="message-avatar">${msg.avatar}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">${msg.sender}</span>
+                            <span class="message-time">${msg.time}</span>
+                        </div>
+                        <div class="message-bubble">${msg.content}</div>
+                        ${msg.type === 'agent' ? `
+                            <div class="message-meta">
+                                <span class="message-action like" onclick="likeMessage(this)">👍 ${msg.likes}</span>
+                                <span class="message-action dislike" onclick="dislikeMessage(this)">👎 ${msg.dislikes}</span>
+                                <span class="message-action" onclick="copyMessage(this)">📋 复制</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function renderProgressSteps() {
+            const container = document.getElementById('progressSteps');
+            container.innerHTML = progressSteps.map(step => `
+                <div class="progress-step-item">
+                    <div class="step-indicator ${step.status}">${getStepIcon(step.status)}</div>
+                    <div class="step-content">
+                        <div class="step-title" style="color: ${step.color};">${step.title}</div>
+                        <div class="step-info">${step.info}</div>
+                        ${step.status === 'running' ? '<div class="mini-progress-bar"><div class="mini-progress-fill"></div></div>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getStepIcon(status) {
+            if (status === 'completed') return '✓';
+            if (status === 'running') return '⚡';
+            return progressSteps.findIndex(s => s.status === status) + 1;
+        }
+        
+        function renderAgentsStatus() {
+            const container = document.getElementById('agentsStatus');
+            container.innerHTML = agentsData.map(agent => `
+                <div class="agent-status-item ${agent.status}">
+                    <div class="agent-info">
+                        <div class="agent-dot ${agent.statusColor}"></div>
+                        <span class="agent-name">${agent.name}</span>
+                    </div>
+                    <span class="agent-status-text ${agent.status}">${agent.statusText}</span>
+                </div>
+            `).join('');
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('sidebar-collapsed');
+            toggleBtn.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+        }
+        
+        function toggleRightPanel() {
+            const panel = document.getElementById('panelRight');
+            const toggleBtn = document.getElementById('panelRightToggle');
+            
+            panel.classList.toggle('collapsed');
+            toggleBtn.textContent = panel.classList.contains('collapsed') ? '▶' : '◀';
+        }
+        
+        function toggleAccordion(id) {
+            const content = document.getElementById(id + 'Content');
+            const icon = document.getElementById(id + 'Icon');
+            
+            content.classList.toggle('expanded');
+            icon.classList.toggle('expanded');
+        }
+        
+        let isResizing = false;
+        let resizeType = '';
+        
+        function startResize(type) {
+            isResizing = true;
+            resizeType = type;
+            document.addEventListener('mousemove', onResize);
+            document.addEventListener('mouseup', stopResize);
+        }
+        
+        function onResize(e) {
+            if (!isResizing) return;
+            
+            const panelLeft = document.getElementById('panelLeft');
+            const panelRight = document.getElementById('panelRight');
+            const mainContent = document.getElementById('mainContentInner');
+            
+            if (resizeType === 'left') {
+                const rect = mainContent.getBoundingClientRect();
+                const newWidth = e.clientX - rect.left;
+                const minWidth = 200;
+                const maxWidth = 360;
+                
+                if (newWidth >= minWidth && newWidth <= maxWidth) {
+                    panelLeft.style.width = newWidth + 'px';
+                }
+            } else if (resizeType === 'right') {
+                const rect = mainContent.getBoundingClientRect();
+                const newWidth = rect.width - (e.clientX - rect.left);
+                const minWidth = 200;
+                const maxWidth = 400;
+                
+                if (newWidth >= minWidth && newWidth <= maxWidth) {
+                    panelRight.style.width = newWidth + 'px';
+                }
+            }
+        }
+        
+        function stopResize() {
+            isResizing = false;
+            resizeType = '';
+            document.removeEventListener('mousemove', onResize);
+            document.removeEventListener('mouseup', stopResize);
+        }
+        
+        function closeModal() {
+            document.getElementById('welcomeModal').style.display = 'none';
+        }
+        
+        function sendMessage() {
+            const input = document.querySelector('.chat-input');
+            const content = input.value.trim();
+            if (!content) return;
+            
+            const newMessage = {
+                type: 'user',
+                sender: '我',
+                avatar: '👤',
+                time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                content: content,
+                likes: 0,
+                dislikes: 0
+            };
+            
+            messageData.push(newMessage);
+            renderMessages();
+            input.value = '';
+            
+            setTimeout(() => {
+                const reply = {
+                    type: 'agent',
+                    sender: '综合评估师',
+                    avatar: '📊',
+                    time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                    content: '<strong>收到您的请求，正在分析...</strong><br><br>已将您的问题分发至相关智能体进行处理，请稍候。',
+                    likes: 0,
+                    dislikes: 0
+                };
+                messageData.push(reply);
+                renderMessages();
+            }, 1500);
+        }
+        
+        function handleInputKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        function likeMessage(el) {
+            const current = parseInt(el.textContent.split(' ')[1]);
+            el.textContent = `👍 ${current + 1}`;
+        }
+        
+        function dislikeMessage(el) {
+            const current = parseInt(el.textContent.split(' ')[1]);
+            el.textContent = `👎 ${current + 1}`;
+        }
+        
+        function copyMessage(el) {
+            const bubble = el.parentElement.parentElement.querySelector('.message-bubble');
+            if (bubble) {
+                const text = bubble.textContent || bubble.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    el.textContent = '✓ 已复制';
+                    setTimeout(() => {
+                        el.textContent = '📋 复制';
+                    }, 2000);
+                });
+            }
+        }
+        
+        function selectCase(caseId) {
+            const items = document.querySelectorAll('.case-item');
+            items.forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-case-id="${caseId}"]`).classList.add('active');
+        }
+        
+        function startReview() {
+            alert('评查流程已启动！');
+        }
+        
+        function pauseReview() {
+            alert('评查已暂停');
+        }
+        
+        function continueReview() {
+            alert('评查已继续');
+        }
+        
+        function loadPage(page) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.parentElement.classList.add('active');
+            alert(`正在加载 ${page} 页面...`);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCaseList();
+            renderMessages();
+            renderProgressSteps();
+            renderAgentsStatus();
+        });
+    </script>
+</body>
+</html>

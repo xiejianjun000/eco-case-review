@@ -1,0 +1,92 @@
+"""
+HERMES 技能：综合分析
+
+使用方式:
+hermes -s comprehensive_analysis --input legality_result=./legality.json,normative_result=./normative.json
+"""
+name: comprehensive_analysis
+description: 生态环境行政处罚案卷综合分析与报告生成
+version: "1.0"
+author: 生态环境案卷评查系统
+tags:
+  - case_review
+  - comprehensive
+  - report
+
+inputs:
+  - name: legality_result
+    type: file
+    description: 合法性评查结果文件
+    required: true
+  - name: normative_result
+    type: file
+    description: 规范性评分结果文件
+  - name: discretion_result
+    type: file
+    description: 裁量基准审查结果文件
+  - name: evidence_result
+    type: file
+    description: 证据链分析结果文件
+  - name: document_result
+    type: file
+    description: 文书完整性检查结果文件
+
+steps:
+  - tool: file_read
+    path: "${legality_result}"
+    description: 读取合法性评查结果
+
+  - tool: file_read
+    path: "${normative_result}"
+    description: 读取规范性评分结果
+
+  - tool: llm
+    model: "${HERMES_MODEL}"
+    prompt: |
+      你是生态环境行政处罚案卷综合分析专家。
+      
+      请基于以下评查结果，生成综合分析报告：
+      
+      【合法性评查结果】
+      {legality_data}
+      
+      【规范性评分结果】
+      {normative_data}
+      
+      综合得分计算公式：
+      综合得分 = 合法性得分 + 规范性得分
+      
+      等级判定标准：
+      - 优秀：≥90分
+      - 良好：80-89分
+      - 合格：60-79分
+      - 不合格：<60分
+      
+      通过判定：
+      - 触发一票否决 → 不通过
+      - 未否决且综合得分<60 → 不通过
+      - 未否决且综合得分≥60 → 通过
+      
+      请生成完整的综合评查报告，包括：
+      1. 评查结论
+      2. 问题汇总
+      3. 改进建议
+
+  - tool: file_write
+    path: "${legality_result}_comprehensive_report.md"
+    content: "${llm_output}"
+    description: 保存综合评查报告
+
+outputs:
+  - name: comprehensive_report
+    type: file
+    description: 综合评查报告
+  - name: comprehensive_score
+    type: number
+    description: 综合得分
+  - name: grade
+    type: string
+    description: 评查等级
+  - name: is_pass
+    type: boolean
+    description: 是否通过

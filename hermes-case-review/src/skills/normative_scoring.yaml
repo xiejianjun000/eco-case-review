@@ -1,0 +1,110 @@
+"""
+HERMES 技能：规范性评分
+
+使用方式:
+hermes -s normative_scoring --input case_file=./case.pdf,legality_passed=true
+"""
+name: normative_scoring
+description: 生态环境行政处罚案卷规范性评分
+version: "4.0"
+author: 生态环境案卷评查系统
+tags:
+  - case_review
+  - normative
+  - scoring
+
+inputs:
+  - name: case_file
+    type: file
+    description: 案卷PDF文件
+    required: true
+  - name: legality_passed
+    type: boolean
+    description: 合法性是否通过
+    default: true
+
+steps:
+  - tool: file_read
+    path: "${case_file}"
+    description: 读取案卷文件
+
+  - tool: llm
+    model: "${HERMES_MODEL}"
+    prompt: |
+      你是生态环境行政执法案卷规范性评分专家。
+      
+      评分标准：
+      
+      一、卷面基本要素评查（20分，扣分制）
+      
+      1. 文书基本要素（10分）
+         - 生态环境主管部门名称、文书名称、发文字号、印章、日期、负责人审批意见（3分）
+         - 承办人意见及签名日期、承办机构负责人审批意见（2分）
+         - 当事人基本信息（名称、地址、统一社会信用代码）（2分）
+         - 送达回证（2分）
+         - 卷面规范（1分）
+      
+      2. 笔录基本要素（10分）
+         - 检查/询问起止时间、地点（1分）
+         - 检查人/询问人、记录人基本信息（1分）
+         - 被检查人/被询问人基本信息及身份（1分）
+         - 出示执法证件、表明身份记录（1.5分）
+         - 告知当事人权利记录（1.5分）
+         - 逐页签名及审阅确认意见（1分）
+         - 空白处理（1分）
+         - 修改处签名（1分）
+      
+      二、文书评分（100分→折算50分，得分制）
+      
+      | 文书名称 | 标准分 | 评查要点 |
+      |----------|--------|----------|
+      | 立案审批表 | 2分 | 案件来源、案由、立案理由 |
+      | 现场检查笔录 | 10分 | 现场情况、违法情况、采样情况 |
+      | 调查询问笔录 | 10分 | 询问内容与违法行为相关 |
+      | 监测/检测/鉴定报告 | 5分 | 机构资质、采样时间、分析结果 |
+      | 收集的其他证据 | 8分 | 书证、视听资料、证人证言 |
+      | 案件调查报告 | 8分 | 事实清楚、证据充分、建议有据 |
+      | 责令改正决定书 | 10分 | 改正内容、期限、逾期后果 |
+      | 行政处罚事先告知书 | 10分 | 违法事实、拟处罚内容、权利告知 |
+      | 听证通知书 | 4分 | 时间、地点、主持人信息 |
+      | 听证笔录 | 8分 | 各方陈述、最后意见、签名 |
+      | 行政处罚决定书 | 15分 | 事实、证据、法律依据、裁量 |
+      | 催告书 | 2分 | 履行期限、金额、权利告知 |
+      | 强制执行申请书 | 5分 | 申请理由、请求内容 |
+      | 结案审批表 | 3分 | 执行情况、结案理由 |
+      
+      计算公式：
+      规范性得分 = 50 × (文书得分 / 标准分) - 基本要素扣分
+      
+      请输出详细评分明细表。
+
+  - tool: python
+    script: |
+      # 规范性评分计算
+      document_score = 85  # 从LLM输出获取
+      document_standard = 100
+      basic_deduction = 3
+      
+      normative_score = 50 * (document_score / document_standard) - basic_deduction
+      
+      result = {
+          'document_score': document_score,
+          'document_standard': document_standard,
+          'basic_deduction': basic_deduction,
+          'normative_score': normative_score
+      }
+      print(result)
+
+outputs:
+  - name: normative_score
+    type: number
+    description: 规范性评分（0-50）
+  - name: document_score
+    type: number
+    description: 文书得分
+  - name: basic_deduction
+    type: number
+    description: 基本要素扣分
+  - name: scoring_detail
+    type: file
+    description: 评分明细表

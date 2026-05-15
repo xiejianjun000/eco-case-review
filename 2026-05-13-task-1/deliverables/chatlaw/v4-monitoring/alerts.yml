@@ -1,0 +1,212 @@
+# V4 行政处罚案卷评查系统 - Prometheus 告警规则
+
+groups:
+  - name: v4_review_alerts
+    interval: 30s
+    rules:
+      # ========== 业务告警 ==========
+
+      # 评查成功率过低
+      - alert: LowSuccessRate
+        expr: v4_review_success_rate < 0.5
+        for: 5m
+        labels:
+          severity: warning
+          team: v4-review
+        annotations:
+          summary: "评查成功率过低"
+          description: "当前成功率为 {{ $value | humanizePercentage }}，低于阈值50%"
+          runbook_url: "https://wiki.example.com/runbooks/v4-low-success-rate"
+
+      # 一票否决率异常
+      - alert: HighVetoRate
+        expr: v4_review_veto_rate > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: v4-review
+        annotations:
+          summary: "一票否决率异常"
+          description: "当前一票否决率为 {{ $value | humanizePercentage }}，超过阈值80%"
+          runbook_url: "https://wiki.example.com/runbooks/v4-high-veto-rate"
+
+      # 评查完全失败
+      - alert: CompleteReviewFailure
+        expr: |
+          sum(rate(v4_review_total{result="fail"}[5m])) /
+          sum(rate(v4_review_total[5m])) > 0.95
+        for: 10m
+        labels:
+          severity: critical
+          team: v4-review
+        annotations:
+          summary: "评查完全失败"
+          description: "过去10分钟内评查失败率超过95%，系统可能存在严重问题"
+          runbook_url: "https://wiki.example.com/runbooks/v4-complete-failure"
+
+      # ========== 性能告警 ==========
+
+      # 处理超时
+      - alert: ProcessingTimeout
+        expr: |
+          histogram_quantile(0.95, rate(v4_review_duration_seconds_bucket{stage="total"}[5m])) > 60
+        for: 5m
+        labels:
+          severity: warning
+          team: v4-review
+        annotations:
+          summary: "处理超时"
+          description: "P95处理时长为 {{ $value | humanizeDuration }}，超过60秒阈值"
+          runbook_url: "https://wiki.example.com/runbooks/v4-processing-timeout"
+
+      # OCR阶段超时
+      - alert: OCRTimeout
+        expr: |
+          histogram_quantile(0.95, rate(v4_review_duration_seconds_bucket{stage="ocr"}[5m])) > 30
+        for: 5m
+        labels:
+          severity: warning
+          team: v4-review
+        annotations:
+          summary: "OCR处理超时"
+          description: "OCR阶段P95处理时长为 {{ $value | humanizeDuration }}，超过30秒阈值"
+
+      # ========== 队列告警 ==========
+
+      # 队列积压严重
+      - alert: QueueBacklog
+        expr: v4_review_queue_size > 1000
+        for: 5m
+        labels:
+          severity: warning
+          team: v4-review
+        annotations:
+          summary: "评查队列积压"
+          description: "当前队列大小为 {{ $value }}，超过1000条阈值"
+
+      # 队列完全阻塞
+      - alert: QueueBlocked
+        expr: v4_review_queue_size > 5000
+        for: 2m
+        labels:
+          severity: critical
+          team: v4-review
+        annotations:
+          summary: "评查队列完全阻塞"
+          description: "当前队列大小为 {{ $value }}，急需处理"
+          runbook_url: "https://wiki.example.com/runbooks/v4-queue-blocked"
+
+      # ========== 资源告警 ==========
+
+      # 内存使用率高
+      - alert: HighMemoryUsage
+        expr: |
+          v4_review_memory_bytes / (vector(container_spec_memory_limit_bytes{container="v4-review"}) > 0) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          team: ops
+        annotations:
+          summary: "内存使用率过高"
+          description: "容器内存使用率超过90%"
+
+      # CPU使用率高
+      - alert: HighCPUUsage
+        expr: rate(v4_review_cpu_seconds_total[5m]) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          team: ops
+        annotations:
+          summary: "CPU使用率过高"
+          description: "CPU使用率超过90%"
+
+  - name: v4_review_infrastructure
+    interval: 30s
+    rules:
+      # ========== 基础设施告警 ==========
+
+      # 服务不可用
+      - alert: ServiceDown
+        expr: up{job="v4-review-system"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          team: ops
+        annotations:
+          summary: "V4评查服务不可用"
+          description: "V4评查系统健康检查失败已超过30秒"
+          runbook_url: "https://wiki.example.com/runbooks/v4-service-down"
+
+      # 健康检查失败
+      - alert: HealthCheckFailed
+        expr: |
+          v4_review_health_status != 1
+        for: 1m
+        labels:
+          severity: critical
+          team: ops
+        annotations:
+          summary: "健康检查失败"
+          description: "V4评查系统健康检查持续失败"
+          runbook_url: "https://wiki.example.com/runbooks/v4-health-check"
+
+      # 磁盘空间不足
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: ops
+        annotations:
+          summary: "磁盘空间不足"
+          description: "根分区可用空间低于10%"
+          runbook_url: "https://wiki.example.com/runbooks/disk-space-low"
+
+      # Prometheus无法抓取指标
+      - alert: PrometheusTargetMissing
+        expr: |
+          prometheus_target_scrape_pool_exceeded_target_limit{job="v4-review-system"} > 0
+        for: 1m
+        labels:
+          severity: warning
+          team: ops
+        annotations:
+          summary: "Prometheus目标缺失"
+          description: "Prometheus无法抓取V4评查系统指标"
+
+  - name: v4_review_slo
+    interval: 1m
+    rules:
+      # ========== SLO告警 ==========
+
+      # 成功率SLO违反
+      - alert: SLOSuccessRateBreach
+        expr: |
+          (
+            sum(rate(v4_review_total{result="pass"}[1h])) /
+            sum(rate(v4_review_total[1h]))
+          ) < 0.95
+        for: 15m
+        labels:
+          severity: warning
+          team: v4-review
+        annotations:
+          summary: "成功率SLO违反"
+          description: "过去1小时成功率为 {{ $value | humanizePercentage }}，低于95% SLO目标"
+          runbook_url: "https://wiki.example.com/runbooks/v4-slo-breach"
+
+      # 处理时长SLO违反
+      - alert: SLOProcessingLatencyBreach
+        expr: |
+          (
+            histogram_quantile(0.95, rate(v4_review_duration_seconds_bucket{stage="total"}[1h])) < 30
+          ) == 0
+        for: 15m
+        labels:
+          severity: warning
+          team: v4-review
+        annotations:
+          summary: "处理时长SLO违反"
+          description: "过去1小时P95处理时长超过30秒SLO目标"

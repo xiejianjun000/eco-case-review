@@ -1,0 +1,57 @@
+hermes-case-review/
+├── src/
+│   ├── __init__.py
+│   ├── main.py                 # CLI 入口
+│   ├── agents/
+│   │   ├── __init__.py
+│   │   ├── base_agent.py       # 智能体基类
+│   │   ├── legality_agent.py   # 合法性评查智能体
+│   │   ├── normative_agent.py   # 规范性评分智能体
+│   │   ├── discretion_agent.py # 裁量基准智能体
+│   │   ├── evidence_agent.py   # 证据链智能体
+│   │   ├── document_agent.py   # 文书完整性智能体
+│   │   └── comprehensive_agent.py  # 综合分析智能体
+│   ├── engine/
+│   │   ├── __init__.py
+│   │   ├── scoring_engine.py   # 评分引擎
+│   │   ├── veto_checker.py     # 否决检查器
+│   │   └── grade_mapper.py     # 等级映射
+│   ├── api/
+│   │   ├── __init__.py
+│   │   └── routes.py           # API 路由
+│   ├── skills/                 # HERMES 技能文件
+│   │   ├── legality_review.yaml
+│   │   ├── normative_scoring.yaml
+│   │   ├── discretion_calculation.yaml
+│   │   ├── evidence_chain.yaml
+│   │   ├── document_completeness.yaml
+│   │   └── comprehensive_analysis.yaml
+│   ├── config/
+│   │   ├── __init__.py
+│   │   └── settings.py         # 配置管理
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── file_parser.py      # 文件解析
+│   │   └── report_generator.py # 报告生成
+│   └── models/
+│       ├── __init__.py
+│       └── schemas.py          # 数据模型
+├── tests/
+│   ├── __init__.py
+│   ├── test_legality.py
+│   ├── test_normative.py
+│   ├── test_engine.py
+│   └── test_api.py
+├── config/
+│   ├── config.yaml             # 主配置
+│   ├── standards/              # 评查标准
+│   │   ├── legality_rules.json
+│   │   ├── normative_rules.json
+│   │   └── discretion_base.json
+│   └── templates/              # 报告模板
+│       └── review_report.md
+├── requirements.txt
+├── setup.py
+├── README.md
+├── docker-compose.yml
+└── .env.example

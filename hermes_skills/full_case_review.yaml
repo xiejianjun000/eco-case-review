@@ -1,0 +1,94 @@
+
+name: full_case_review
+description: 生态环境行政处罚案卷完整评查流程
+version: "1.0"
+author: 生态环境案卷评查系统
+tags:
+  - case_review
+  - full_review
+  - workflow
+
+inputs:
+  - name: case_pdf
+    type: file
+    description: 案卷PDF文件
+    required: true
+  - name: case_type
+    type: string
+    description: 案件类型
+    default: 一般行政处罚
+    required: false
+
+steps:
+  # 步骤1：案卷上传与解析
+  - name: parse_case
+    use: pdf_parser
+    inputs:
+      file: "${case_pdf}"
+
+  # 步骤2：合法性评查（一票否决）
+  - name: legality_check
+    use: legality_review
+    inputs:
+      case_file: "${case_pdf}"
+      case_type: "${case_type}"
+
+  # 步骤3：如果合法性通过，继续规范性评查
+  - name: normative_check
+    use: normative_scoring
+    inputs:
+      case_file: "${case_pdf}"
+      legality_passed: "${legality_check.has_veto == false}"
+    if: "${legality_check.has_veto == false}"
+
+  # 步骤4：裁量基准计算
+  - name: discretion_check
+    use: discretion_calculation
+    inputs:
+      case_file: "${case_pdf}"
+    if: "${legality_check.has_veto == false}"
+
+  # 步骤5：证据链分析
+  - name: evidence_analysis
+    use: evidence_chain
+    inputs:
+      case_file: "${case_pdf}"
+    if: "${legality_check.has_veto == false}"
+
+  # 步骤6：文书完整性检查
+  - name: document_check
+    use: document_completeness
+    inputs:
+      case_file: "${case_pdf}"
+    if: "${legality_check.has_veto == false}"
+
+  # 步骤7：综合分析与报告生成
+  - name: final_analysis
+    use: comprehensive_analysis
+    inputs:
+      legality_result: "${legality_check}"
+      normative_result: "${normative_check}"
+      discretion_result: "${discretion_check}"
+      evidence_result: "${evidence_analysis}"
+      document_result: "${document_check}"
+
+  # 步骤8：生成最终报告
+  - name: generate_report
+    use: report_generator
+    inputs:
+      analysis_data: "${final_analysis}"
+      template: "eco_review_template_v4.docx"
+
+outputs:
+  - name: final_report
+    type: file
+    description: 完整评查报告
+  - name: comprehensive_score
+    type: number
+    description: 综合得分（0-100）
+  - name: grade
+    type: string
+    description: 评查等级（优秀/良好/合格/不合格）
+  - name: passed
+    type: boolean
+    description: 是否通过评查
