@@ -1,3 +1,2 @@
-# HERMES Case Review System
-
-This is the v1.0 of the HERMES-based case review system.
+# HERMES Case Review System Config Module
+# Version 1.0.0

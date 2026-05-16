@@ -1,0 +1,228 @@
+# ============================================================
+# HERMES Case Review System - Production Docker Compose
+# Supports development and production environments
+# ============================================================
+
+# Development: docker compose up
+# Production: docker compose --profile prod up -d
+# View logs: docker compose logs -f
+
+services:
+  # ==========================================
+  # Main Application Service
+  # ==========================================
+  hermes-review:
+    build:
+      context: ../../
+      dockerfile: deployment/production/Dockerfile
+    image: hermes-case-review:${IMAGE_TAG:-latest}
+    container_name: hermes-review
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      - HERMES_MODEL_PROVIDER=${HERMES_MODEL_PROVIDER:-deepseek}
+      - HERMES_MODEL_NAME=${HERMES_MODEL_NAME:-deepseek-chat}
+      - HERMES_API_KEY=${HERMES_API_KEY:-}
+      - OCR_ENGINE=${OCR_ENGINE:-local}
+      - MAX_PDF_SIZE=${MAX_PDF_SIZE:-50}
+      - MAX_PAGES=${MAX_PAGES:-500}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - REDIS_URL=redis://redis:6379/0
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - TZ=Asia/Shanghai
+    volumes:
+      - app-data:/app/data
+      - app-logs:/app/logs
+      - app-uploads:/app/uploads
+      - app-reports:/app/reports
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2Gi
+          cpu: "2000m"
+        reservations:
+          memory: 512Mi
+          cpu: "500m"
+    networks:
+      - hermes-network
+
+  # ==========================================
+  # Redis Cache Service
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: hermes-redis
+    restart: unless-stopped
+    command: >
+      redis-server 
+      --appendonly yes 
+      --maxmemory 256mb 
+      --maxmemory-policy allkeys-lru
+      --tcp-backlog 511
+      --timeout 0
+      --tcp-keepalive 300
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256Mi
+          cpu: "500m"
+    networks:
+      - hermes-network
+
+  # ==========================================
+  # Load Test Service
+  # ==========================================
+  load-test:
+    build:
+      context: ../../
+      dockerfile: deployment/production/Dockerfile
+    container_name: hermes-load-test
+    profiles:
+      - loadtest
+    command: >
+      python -c "
+      from locust import HttpUser, task, between;
+      import random;
+      
+      class ReviewUser(HttpUser):
+          wait_time = between(0.1, 0.5)
+          
+          @task(3)
+          def review_case(self):
+              payload = {
+                  'case_id': f'test_{random.randint(1000,9999)}',
+                  'case_data': {
+                      'document_score': random.randint(60, 100),
+                      'document_standard': 100,
+                      'basic_deduction': random.randint(0, 5)
+                  },
+                  'case_type': '一般行政处罚'
+              }
+              self.client.post('/api/v1/review', json=payload)
+          
+          @task(1)
+          def health_check(self):
+              self.client.get('/health')
+          
+          @task(1)
+          def get_standards(self):
+              self.client.get('/api/v1/standards/legality')
+      "
+    depends_on:
+      hermes-review:
+        condition: service_healthy
+    networks:
+      - hermes-network
+
+  # ==========================================
+  # Nginx Reverse Proxy (Production Only)
+  # ==========================================
+  nginx:
+    image: nginx:alpine
+    container_name: hermes-nginx
+    restart: unless-stopped
+    profiles:
+      - prod
+    ports:
+      - "${NGINX_PORT:-80}:80"
+      - "${NGINX_SSL_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      hermes-review:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - hermes-network
+
+  # ==========================================
+  # Prometheus Monitoring (Production Only)
+  # ==========================================
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    container_name: hermes-prometheus
+    restart: unless-stopped
+    profiles:
+      - prod
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - hermes-network
+
+  # ==========================================
+  # Grafana Visualization (Production Only)
+  # ==========================================
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: hermes-grafana
+    restart: unless-stopped
+    profiles:
+      - prod
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - hermes-network
+
+# ==========================================
+# Data Volumes
+# ==========================================
+volumes:
+  app-data:
+    driver: local
+  app-logs:
+    driver: local
+  app-uploads:
+    driver: local
+  app-reports:
+    driver: local
+  redis-data:
+    driver: local
+  nginx-logs:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  hermes-network:
+    driver: bridge
