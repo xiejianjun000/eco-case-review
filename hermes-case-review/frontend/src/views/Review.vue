@@ -1,371 +1,283 @@
 <template>
-  <div class="h-full flex">
-    <div class="w-72 bg-white border-r border-gray-200 flex flex-col">
-      <div class="p-4 border-b border-gray-200">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-semibold text-gray-800">审查记录</h3>
-          <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-          </button>
-        </div>
-        <div class="relative">
-          <input 
-            type="text" 
-            placeholder="搜索案卷..." 
-            class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-primary-500 text-sm"
-          />
-          <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </div>
+  <div class="p-6 h-full flex flex-col">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800">审查交流</h2>
+        <p class="text-gray-500 mt-1">与专业智能体团队进行案件审查交流</p>
       </div>
-      
-      <div class="flex-1 overflow-auto">
-        <div class="p-3">
-          <div class="text-xs text-gray-500 mb-2 px-2">今日评查</div>
-          <div 
-            v-for="item in todayCases" 
-            :key="item.id" 
-            class="p-3 rounded-lg cursor-pointer transition-colors"
-            :class="item.id === activeCase ? 'bg-primary-50 border border-primary-200' : 'hover:bg-gray-50'"
-            @click="selectCase(item)"
-          >
-            <div class="font-medium text-gray-800 text-sm">{{ item.name }}</div>
-            <div class="flex items-center justify-between mt-1">
-              <span class="text-xs text-gray-500">{{ item.time }}</span>
-              <span class="text-xs px-2 py-0.5 rounded-full" :class="item.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'">
-                {{ item.status === 'completed' ? '已完成' : '进行中' }}
-              </span>
-            </div>
-          </div>
-          
-          <div class="text-xs text-gray-500 mb-2 px-2 mt-4">历史记录</div>
-          <div 
-            v-for="item in historyCases" 
-            :key="item.id" 
-            class="p-3 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-            @click="selectCase(item)"
-          >
-            <div class="font-medium text-gray-800 text-sm">{{ item.name }}</div>
-            <div class="flex items-center justify-between mt-1">
-              <span class="text-xs text-gray-500">{{ item.time }}</span>
-              <span class="text-xs font-bold" :class="item.score >= 80 ? 'text-green-500' : item.score >= 60 ? 'text-yellow-500' : 'text-red-500'">{{ item.score }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="p-3 border-t border-gray-200">
-        <div class="flex items-center gap-2">
-          <div class="flex-1 bg-gray-100 rounded-lg p-2">
-            <div class="text-xs text-gray-500">收藏夹</div>
-            <div class="text-sm font-medium text-gray-800 mt-1">3个案卷</div>
-          </div>
-          <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="flex-1 flex flex-col bg-gray-50">
-      <div class="bg-white border-b border-gray-200 px-6 py-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="font-semibold text-gray-800">审查交流</h3>
-            <p class="text-sm text-gray-500 mt-1">与智能体协作完成案卷评查</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full flex items-center gap-1">
-              <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-              6个智能体在线
-            </span>
-            <button class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm">
-              开始评查
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="flex-1 overflow-auto p-6 space-y-4">
-        <div 
-          v-for="message in messages" 
-          :key="message.id" 
-          class="flex gap-3"
-          :class="message.type === 'user' ? 'flex-row-reverse' : ''"
+      <div class="flex items-center gap-3">
+        <button 
+          @click="resetChat"
+          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
         >
-          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" :class="message.type === 'user' ? 'bg-primary-500 text-white' : 'bg-gray-200 text-gray-600'">
-            {{ message.type === 'user' ? '👤' : message.agentName?.charAt(0) }}
-          </div>
-          <div class="max-w-[70%]">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-medium text-sm" :class="message.type === 'user' ? 'text-gray-600' : 'text-primary-600'">
-                {{ message.type === 'user' ? '我' : message.agentName }}
-              </span>
-              <span class="text-xs text-gray-400">{{ formatTime(message.timestamp) }}</span>
-            </div>
-            <div 
-              class="rounded-xl px-4 py-3"
-              :class="message.type === 'user' ? 'bg-primary-500 text-white' : 'bg-white border border-gray-200'"
-              v-html="renderMarkdown(message.content)"
-            ></div>
-            <div class="flex items-center gap-4 mt-2">
-              <button class="flex items-center gap-1 text-xs hover:text-primary-500 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
-                </svg>
-                👍
-              </button>
-              <button class="flex items-center gap-1 text-xs hover:text-red-500 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
-                </svg>
-                👎
-              </button>
-              <button class="flex items-center gap-1 text-xs hover:text-gray-600 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-                复制
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-white border-t border-gray-200 p-4">
-        <div class="flex items-center gap-3 mb-3">
-          <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-            </svg>
-          </button>
-          <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 000-7.072m-2.828 9.9a9 9 0 000-12.728m19.5-3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-17 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-          </button>
-          <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </button>
-          <div class="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg">
-            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-            </svg>
-            <select class="bg-transparent border-none outline-none text-sm">
-              <option>DeepSeek-V3</option>
-              <option>GLM-4</option>
-              <option>GPT-4o</option>
-            </select>
-          </div>
-          <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-          </button>
-        </div>
-        
-        <div class="relative">
-          <textarea 
-            v-model="inputMessage"
-            placeholder="输入消息... 支持@智能体单独对话"
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-primary-500 resize-none"
-            rows="2"
-            @keydown.enter="sendMessage"
-          ></textarea>
-          <div class="absolute right-4 bottom-4 flex items-center gap-3">
-            <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors text-sm">
-              暂停
-            </button>
-            <button class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm">
-              发送
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="w-96 bg-white border-l border-gray-200 flex flex-col">
-      <div class="flex items-center justify-between p-4 border-b border-gray-200">
-        <h3 class="font-semibold text-gray-800">审查详情</h3>
-        <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
+          重置对话
+        </button>
+        <button 
+          @click="startNewReview"
+          class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          开始新审查
         </button>
       </div>
-      
-      <div class="flex-1 overflow-auto">
-        <div class="border-b border-gray-200">
-          <div class="p-4 cursor-pointer hover:bg-gray-50 transition-colors" @click="activePanel = 'pdf'">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                </svg>
-                <span class="font-medium text-gray-800">案卷预览</span>
+    </div>
+
+    <div class="flex gap-6 flex-1 overflow-hidden">
+      <!-- 左侧：智能体选择 -->
+      <div class="w-72 bg-white rounded-xl border border-gray-200 flex flex-col overflow-hidden">
+        <div class="p-4 border-b border-gray-200">
+          <h3 class="font-semibold text-gray-800">专业智能体</h3>
+        </div>
+        <div class="flex-1 overflow-y-auto p-2 space-y-2">
+          <div
+            v-for="agent in agents"
+            :key="agent.id"
+            @click="selectAgent(agent)"
+            class="p-3 rounded-lg cursor-pointer transition-all border-2"
+            :class="
+              selectedAgent?.id === agent.id
+                ? 'border-primary-500 bg-primary-50'
+                : 'border-transparent hover:bg-gray-50'
+            "
+          >
+            <div class="flex items-center gap-3">
+              <div class="text-2xl">{{ agent.avatar }}</div>
+              <div class="flex-1">
+                <div class="font-medium text-gray-800">{{ agent.name }}</div>
+                <div class="text-xs text-gray-500">{{ agent.nameEn }}</div>
               </div>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
+              <div class="flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full" :class="getStatusDotClass(agent.status)"></span>
+              </div>
+            </div>
+            <div class="mt-2 text-xs text-gray-600 line-clamp-2">
+              {{ agent.description }}
             </div>
           </div>
-          <div v-if="activePanel === 'pdf'" class="p-4">
-            <div class="bg-gray-100 rounded-lg h-64 flex items-center justify-center">
-              <div class="text-center text-gray-500">
-                <svg class="w-16 h-16 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                </svg>
-                <div>案卷PDF预览区域</div>
-                <div class="text-sm mt-1">第 3/23 页</div>
+        </div>
+      </div>
+
+      <!-- 中间：对话区域 -->
+      <div class="flex-1 bg-white rounded-xl border border-gray-200 flex flex-col overflow-hidden">
+        <!-- 对话头部 -->
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center text-xl">
+              {{ selectedAgent?.avatar || '🤖' }}
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">
+                {{ selectedAgent?.name || '选择智能体' }}
+              </div>
+              <div class="text-xs text-gray-500 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full" :class="getStatusDotClass(selectedAgent?.status || 'idle')"></span>
+                {{ getStatusText(selectedAgent?.status || 'idle') }}
               </div>
             </div>
-            <div class="flex items-center justify-between mt-3">
-              <div class="flex items-center gap-2">
-                <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                  </svg>
-                </button>
-                <span class="text-sm text-gray-600">第 3 页</span>
-                <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="语音通话">
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+            </button>
+            <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="查看历史">
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 对话消息 -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4" ref="messagesContainer">
+          <div v-if="messages.length === 0" class="h-full flex items-center justify-center">
+            <div class="text-center text-gray-500">
+              <div class="text-5xl mb-4">💬</div>
+              <div class="text-lg font-medium text-gray-700">开始新的审查交流</div>
+              <div class="text-sm mt-2">选择左侧智能体，开始专业案件审查</div>
+            </div>
+          </div>
+
+          <div
+            v-for="message in messages"
+            :key="message.id"
+            class="flex gap-3"
+            :class="message.type === 'user' ? 'justify-end' : 'justify-start'"
+          >
+            <div v-if="message.type === 'agent'" class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              {{ getAgentAvatar(message.agentId) }}
+            </div>
+            <div class="max-w-[70%]">
+              <div
+                class="rounded-2xl px-4 py-3"
+                :class="
+                  message.type === 'user'
+                    ? 'bg-primary-500 text-white rounded-tr-none'
+                    : 'bg-gray-100 text-gray-800 rounded-tl-none'
+                "
+              >
+                <div v-if="message.agentName && message.type === 'agent'" class="text-xs font-medium mb-1 opacity-80">
+                  {{ message.agentName }}
+                </div>
+                <div class="whitespace-pre-wrap" v-html="renderMarkdown(message.content)"></div>
               </div>
-              <div class="flex items-center gap-2">
-                <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                  </svg>
-                </button>
+              <div class="text-xs text-gray-400 mt-1 text-right">
+                {{ formatTime(message.timestamp) }}
+              </div>
+            </div>
+            <div v-if="message.type === 'user'" class="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+              👤
+            </div>
+          </div>
+
+          <div v-if="isTyping" class="flex gap-3">
+            <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+              {{ getAgentAvatar(selectedAgent?.id) }}
+            </div>
+            <div class="bg-gray-100 rounded-2xl rounded-tl-none px-4 py-3">
+              <div class="flex gap-1">
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
               </div>
             </div>
           </div>
         </div>
-        
-        <div class="border-b border-gray-200">
-          <div class="p-4 cursor-pointer hover:bg-gray-50 transition-colors" @click="activePanel = 'progress'">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
+
+        <!-- 输入区域 -->
+        <div class="p-4 border-t border-gray-200">
+          <div class="flex items-end gap-3">
+            <div class="flex gap-2">
+              <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="上传文件">
                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7.172l-4.832 4.83a2 2 0 00.001 2.827l.001.001a2 2 0 002.828.002l4.83-4.83a6 6 0 00-8.484-8.484l-4.83 4.83a10 10 0 0014.142 14.142l4.83-4.83a6 6 0 00-8.485-8.485z"/>
                 </svg>
-                <span class="font-medium text-gray-800">审查进度</span>
-              </div>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
+              </button>
+              <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="快速提问">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </button>
             </div>
+            <div class="flex-1 relative">
+              <textarea
+                v-model="inputMessage"
+                @keydown.enter.prevent="sendMessage"
+                placeholder="输入您的问题或描述案件..."
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-primary-500 resize-none"
+                rows="1"
+              ></textarea>
+            </div>
+            <button
+              @click="sendMessage"
+              :disabled="!inputMessage.trim() || !selectedAgent"
+              class="p-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+            </button>
           </div>
-          <div v-if="activePanel === 'progress'" class="p-4">
-            <div class="space-y-3">
-              <div v-for="(step, index) in reviewSteps" :key="index" class="flex items-start gap-3">
-                <div 
-                  class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                  :class="getStepClass(step.status)"
+
+          <div class="mt-3 flex gap-2 flex-wrap">
+            <button
+              v-for="suggestion in quickSuggestions"
+              :key="suggestion"
+              @click="useSuggestion(suggestion)"
+              class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              {{ suggestion }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧：案件信息 -->
+      <div class="w-80 bg-white rounded-xl border border-gray-200 flex flex-col overflow-hidden">
+        <div class="p-4 border-b border-gray-200">
+          <h3 class="font-semibold text-gray-800">案件信息</h3>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+          <div v-if="currentCase" class="space-y-4">
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="text-sm text-gray-500 mb-1">案卷编号</div>
+              <div class="font-medium text-gray-800">{{ currentCase.caseNumber }}</div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="text-sm text-gray-500 mb-1">案件名称</div>
+              <div class="font-medium text-gray-800">{{ currentCase.name }}</div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="text-sm text-gray-500 mb-1">当事人</div>
+              <div class="font-medium text-gray-800">{{ currentCase.respondent }}</div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="text-sm text-gray-500 mb-1">案件类型</div>
+              <div class="font-medium text-gray-800">{{ currentCase.caseType }}</div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="text-sm text-gray-500 mb-1">违法事实</div>
+              <div class="text-sm text-gray-700">{{ currentCase.violation }}</div>
+            </div>
+
+            <div v-if="currentCase.score" class="bg-gray-50 rounded-lg p-3">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-500">综合评分</span>
+                <span class="text-2xl font-bold" :class="getScoreClass(currentCase.score)">
+                  {{ currentCase.score }}
+                </span>
+              </div>
+              <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full"
+                  :class="getScoreClass(currentCase.score)"
+                  :style="{ width: currentCase.score + '%' }"
+                ></div>
+              </div>
+              <div class="text-xs text-center mt-2" :class="getScoreClass(currentCase.score)">
+                {{ currentCase.pass ? '✅ 审查通过' : '❌ 审查不通过' }}
+              </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-4">
+              <h4 class="font-medium text-gray-800 mb-3">审查进度</h4>
+              <div class="space-y-2">
+                <div
+                  v-for="(step, index) in reviewSteps"
+                  :key="index"
+                  class="flex items-center gap-3"
                 >
-                  {{ step.status === 'completed' ? '✓' : step.status === 'running' ? '⚡' : index + 1 }}
-                </div>
-                <div class="flex-1">
-                  <div class="flex items-center justify-between">
-                    <span class="font-medium text-sm" :class="step.status === 'completed' ? 'text-green-600' : step.status === 'running' ? 'text-primary-600' : 'text-gray-600'">{{ step.name }}</span>
-                    <span class="text-xs text-gray-400">{{ step.time }}</span>
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
+                    :class="step.status === 'completed' ? 'bg-green-500 text-white' : step.status === 'in-progress' ? 'bg-primary-500 text-white animate-pulse' : 'bg-gray-200 text-gray-500'"
+                  >
+                    {{ step.status === 'completed' ? '✓' : index + 1 }}
                   </div>
-                  <div v-if="step.status === 'running'" class="mt-1">
-                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div class="h-full bg-primary-500 rounded-full progress-bar"></div>
-                    </div>
-                    <div class="text-xs text-gray-500 mt-1">{{ step.progress }}</div>
+                  <div class="flex-1">
+                    <div class="text-sm font-medium text-gray-800">{{ step.name }}</div>
+                    <div class="text-xs text-gray-500">{{ step.description }}</div>
                   </div>
-                  <div v-if="step.status === 'completed' && step.score !== undefined" class="text-xs text-green-500 mt-1">得分: {{ step.score }}</div>
                 </div>
               </div>
             </div>
-            
-            <div class="flex items-center gap-3 mt-4">
-              <button class="flex-1 px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors text-sm">
-                ⏸️ 暂停
-              </button>
-              <button class="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
-                ▶️ 继续
-              </button>
-            </div>
           </div>
-        </div>
-        
-        <div class="border-b border-gray-200">
-          <div class="p-4 cursor-pointer hover:bg-gray-50 transition-colors" @click="activePanel = 'report'">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <span class="font-medium text-gray-800">评查报告</span>
-              </div>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </div>
-          </div>
-          <div v-if="activePanel === 'report'" class="p-4">
-            <div class="bg-gray-50 rounded-lg p-4">
-              <div class="text-center mb-4">
-                <div class="text-4xl font-bold text-primary-500">89.5</div>
-                <div class="text-sm text-gray-500 mt-1">综合得分</div>
-                <div class="text-lg font-semibold text-green-600">优秀</div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-white rounded-lg p-3 text-center">
-                  <div class="text-xl font-bold text-gray-800">50</div>
-                  <div class="text-xs text-gray-500">合法性</div>
-                </div>
-                <div class="bg-white rounded-lg p-3 text-center">
-                  <div class="text-xl font-bold text-gray-800">39.5</div>
-                  <div class="text-xs text-gray-500">规范性</div>
-                </div>
-              </div>
-              <div class="flex gap-2 mt-4">
-                <button class="flex-1 px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm flex items-center justify-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                  </svg>
-                  PDF
-                </button>
-                <button class="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm flex items-center justify-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16h-2v-6a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V16h-2v-3.586l-2.293 2.293M7 16h2.586l2-2H14M7 16h2c.266 0 .52-.097.707-.293l3-3c.187-.187.293-.441.293-.707V10c0-.552-.448-1-1-1H7c-.552 0-1 .448-1 1v6z"></path>
-                  </svg>
-                  Word
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="p-4">
-          <div class="flex items-center gap-2 mb-3">
-            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-            <span class="font-medium text-gray-800">智能体状态</span>
-          </div>
-          <div class="space-y-2">
-            <div v-for="agent in agentStatus" :key="agent.id" class="flex items-center justify-between p-2 rounded-lg" :class="agent.status === 'running' ? 'bg-green-50' : 'bg-gray-50'">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full" :class="agent.status === 'running' ? 'bg-green-500' : agent.status === 'waiting' ? 'bg-yellow-500' : 'bg-gray-300'"></span>
-                <span class="text-sm text-gray-700">{{ agent.name }}</span>
-              </div>
-              <span class="text-xs px-2 py-0.5 rounded-full" :class="getStatusClass(agent.status)">{{ getStatusText(agent.status) }}</span>
-            </div>
+
+          <div v-else class="text-center text-gray-500 py-8">
+            <div class="text-4xl mb-3">📁</div>
+            <div class="text-lg font-medium text-gray-700">选择案件</div>
+            <div class="text-sm mt-2">从案卷管理中选择案件开始审查</div>
+            <button class="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm">
+              选择案件
+            </button>
           </div>
         </div>
       </div>
@@ -374,67 +286,307 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, onMounted, computed, nextTick } from 'vue'
+import { useAppStore } from '../stores'
 import markdownIt from 'markdown-it'
 
+const appStore = useAppStore()
 const md = markdownIt()
 
-const inputMessage = ref('')
-const activeCase = ref(1)
-const activePanel = ref('pdf')
-
-const todayCases = [
-  { id: 1, name: '案卷2024-001', time: '10分钟前', status: 'completed' },
-  { id: 2, name: '案卷2024-002', time: '25分钟前', status: 'reviewing' },
-  { id: 3, name: '案卷2024-003', time: '1小时前', status: 'reviewing' },
-]
-
-const historyCases = [
-  { id: 4, name: '案卷2024-089', time: '昨天', score: 76.5 },
-  { id: 5, name: '案卷2024-088', time: '昨天', score: 92.3 },
-  { id: 6, name: '案卷2024-087', time: '2天前', score: 58.0 },
-]
-
-const messages = reactive([
-  { id: 1, type: 'agent', content: '您好！我是您的智能评查助手，请问需要我帮您审查哪个案卷？', agentName: '综合评估师', timestamp: new Date() },
-  { id: 2, type: 'user', content: '请帮我审查案卷2024-001', agentName: undefined, timestamp: new Date() },
-  { id: 3, type: 'agent', content: '好的，正在启动评查流程...\n\n**审查进度**\n\n1. ✅ 文件解析完成（23页PDF）\n2. ⚡ 合法性审查中（12/25项）\n3. ⏳ 等待中\n\n预计完成时间：约3分钟', agentName: '综合评估师', timestamp: new Date() },
+const agents = ref([
+  {
+    id: 'legality',
+    name: '合法性审查员',
+    nameEn: 'Legality Reviewer',
+    status: 'running',
+    todayTasks: 12,
+    successRate: 98.5,
+    description: '精通《行政处罚法》，负责检查25项一票否决条件',
+    avatar: '⚖️'
+  },
+  {
+    id: 'normative',
+    name: '规范性审查员',
+    nameEn: 'Normative Reviewer',
+    status: 'idle',
+    todayTasks: 8,
+    successRate: 96.8,
+    description: '文书专家，负责卷面要素和文书质量评分',
+    avatar: '📋'
+  },
+  {
+    id: 'discretion',
+    name: '裁量计算师',
+    nameEn: 'Discretion Calculator',
+    status: 'running',
+    todayTasks: 5,
+    successRate: 97.2,
+    description: '精算专家，负责罚款金额裁量计算',
+    avatar: '🧮'
+  },
+  {
+    id: 'evidence',
+    name: '证据分析师',
+    nameEn: 'Evidence Analyst',
+    status: 'idle',
+    todayTasks: 3,
+    successRate: 95.5,
+    description: '证据专家，负责证据链三性分析',
+    avatar: '🔍'
+  },
+  {
+    id: 'document',
+    name: '文书审计员',
+    nameEn: 'Document Auditor',
+    status: 'running',
+    todayTasks: 7,
+    successRate: 94.2,
+    description: '审计专家，负责文书完整性检查',
+    avatar: '📄'
+  },
+  {
+    id: 'comprehensive',
+    name: '综合评估师',
+    nameEn: 'Comprehensive Evaluator',
+    status: 'idle',
+    todayTasks: 2,
+    successRate: 93.1,
+    description: '评估专家，负责综合评分和报告生成',
+    avatar: '📊'
+  }
 ])
 
-const reviewSteps = [
-  { name: '文件解析', status: 'completed', time: '0.5s', score: 100 },
-  { name: '合法性审查', status: 'running', time: '12s', progress: '48%' },
-  { name: '规范性审查', status: 'pending', time: '-', progress: '-' },
-  { name: '裁量基准计算', status: 'pending', time: '-', progress: '-' },
-  { name: '证据链分析', status: 'pending', time: '-', progress: '-' },
-  { name: '综合报告生成', status: 'pending', time: '-', progress: '-' },
+const selectedAgent = ref<any>(null)
+const messages = ref<any[]>([])
+const inputMessage = ref('')
+const isTyping = ref(false)
+const messagesContainer = ref<HTMLElement | null>(null)
+
+const currentCase = ref({
+  caseNumber: '案例2024-001',
+  name: '某食品有限公司篡改自动监测数据排放水污染物案',
+  respondent: '某食品有限公司',
+  caseType: '水污染防治类',
+  violation: '2024年5月检查发现，该公司在线监测设备COD和氨氮的校准参数多次被人为修改，不符合斜率k=1、截距b=0的设备管理要求，导致在线监测结果失真。',
+  score: 76.5,
+  pass: true
+})
+
+const reviewSteps = ref([
+  { name: '合法性审查', description: '检查25项否决条件', status: 'completed' },
+  { name: '规范性评分', description: '文书质量评估', status: 'completed' },
+  { name: '证据链分析', description: '证据三性验证', status: 'in-progress' },
+  { name: '裁量计算', description: '罚款金额建议', status: 'pending' },
+  { name: '综合评估', description: '生成审查报告', status: 'pending' }
+])
+
+const quickSuggestions = [
+  '请分析本案的法律适用问题',
+  '检查证据链是否完整',
+  '给出处罚裁量建议',
+  '本案有哪些风险点',
+  '需要补充哪些材料'
 ]
 
-const agentStatus = [
-  { id: 'legality', name: '合法性审查员', status: 'running' },
-  { id: 'normative', name: '规范性审查员', status: 'waiting' },
-  { id: 'discretion', name: '裁量计算师', status: 'waiting' },
-  { id: 'evidence', name: '证据分析师', status: 'waiting' },
-  { id: 'document', name: '文书审计员', status: 'running' },
-  { id: 'comprehensive', name: '综合评估师', status: 'idle' },
-]
-
-const selectCase = (item: any) => {
-  activeCase.value = item.id
+const getStatusDotClass = (status: string) => {
+  if (status === 'running') return 'bg-green-500'
+  if (status === 'idle') return 'bg-gray-400'
+  return 'bg-yellow-500'
 }
 
-const sendMessage = () => {
-  if (!inputMessage.value.trim()) return
-  
-  messages.push({
+const getStatusText = (status: string) => {
+  if (status === 'running') return '在线可用'
+  if (status === 'idle') return '空闲中'
+  return '忙碌中'
+}
+
+const getScoreClass = (score: number) => {
+  if (score >= 90) return 'text-green-600'
+  if (score >= 80) return 'text-blue-600'
+  if (score >= 60) return 'text-yellow-600'
+  return 'text-red-600'
+}
+
+const getAgentAvatar = (agentId?: string) => {
+  if (!agentId) return '🤖'
+  const agent = agents.value.find(a => a.id === agentId)
+  return agent?.avatar || '🤖'
+}
+
+const selectAgent = (agent: any) => {
+  selectedAgent.value = agent
+  if (messages.value.length === 0) {
+    addMessage('agent', `您好！我是${agent.name}，${agent.description}。请告诉我您需要什么帮助？`, agent.id, agent.name)
+  }
+}
+
+const addMessage = (type: 'user' | 'agent', content: string, agentId?: string, agentName?: string) => {
+  messages.value.push({
     id: Date.now(),
-    type: 'user',
-    content: inputMessage.value,
-    agentName: undefined,
-    timestamp: new Date(),
+    type,
+    content,
+    agentId,
+    agentName,
+    timestamp: new Date()
   })
-  
+  scrollToBottom()
+}
+
+const sendMessage = async () => {
+  if (!inputMessage.value.trim() || !selectedAgent.value) return
+
+  const userMessage = inputMessage.value
+  addMessage('user', userMessage)
   inputMessage.value = ''
+  isTyping.value = true
+
+  await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1500))
+
+  let response = ''
+  switch (selectedAgent.value.id) {
+    case 'legality':
+      response = `针对您的问题，我从合法性角度分析如下：
+
+**关键法律条款检查：**
+
+1. **《中华人民共和国行政处罚法》第三十九条** ✓
+   - 当事人享有的陈述权、申辩权已告知
+
+2. **《环境行政处罚办法》第二十八条** ✓
+   - 违法事实清楚，证据充分
+
+3. **《行政处罚法》第四十二条** ✓
+   - 听证程序适用正确
+
+**一票否决条件检查：**
+✅ 未发现25项否决情形
+
+请问还需要检查其他方面吗？`
+      break
+    case 'normative':
+      response = `从规范性角度评估：
+
+**文书评分结果：**
+- 立案审批表：92分 ✓
+- 调查询问笔录：88分 ✓
+- 现场检查（勘验）笔录：90分 ✓
+- 处罚告知书：85分 ✓
+- 处罚决定书：89分 ✓
+
+**卷面要素检查：**
+✅ 当事人基本信息完整
+✅ 违法事实描述清楚
+✅ 法律依据引用准确
+✅ 处罚裁量幅度适当
+✅ 文书送达回证规范
+
+**扣分项目：**
+- 询问笔录缺少执法人员签名确认 ➝ -3分
+- 现场照片缺少拍摄时间标注 ➝ -2分
+
+需要我详细说明扣分依据吗？`
+      break
+    case 'evidence':
+      response = `正在分析本案的证据链完整性...
+
+**证据清单分析：**
+
+1. **现场检查（勘验）笔录** ✅
+   - 时间、地点、当事人签字齐全
+   - 现场情况记载详实
+
+2. **调查询问笔录** ✅
+   - 法定代表人询问完整
+   - 关键事实确认清楚
+
+3. **监测报告** ✅
+   - CMA资质认证有效
+   - 监测方法符合标准
+   - 数据来源可追溯
+
+4. **现场照片/录像** ⚠️
+   - 缺少拍摄时间戳标记
+   - 建议补充GPS定位信息
+
+5. **物证** ✅
+   - 涉案设备查封扣押清单齐全
+
+**证据链三性评估：**
+- 合法性：92分 ✓
+- 关联性：88分 ✓
+- 真实性：85分 ✓
+
+总体评估：证据链基本完整，建议补充完善照片资料。`
+      break
+    case 'discretion':
+      response = `根据本案情节，我来进行处罚裁量计算：
+
+**案件基本情况：**
+- 违法行为：篡改自动监测数据
+- 适用法律：《水污染防治法》第三十九条
+- 违法持续时间：2023年12月至2024年5月（6个月）
+
+**裁量参考因素：**
+
+1. **违法情节严重程度** - 较重
+   - 故意篡改数据
+   - 持续时间较长
+
+2. **改正态度** - 一般
+   - 配合调查
+   - 已停止违法行为
+
+3. **环境影响程度** - 中等
+   - 未造成重大污染事故
+   - 但数据失真影响监管
+
+**处罚裁量建议：**
+- **基准罚款：** 20万元
+- **从重情节：** +30% → +6万元
+- **配合调查：** -10% → -2万元
+- **最终建议罚款：** 24万元
+
+**法律依据：**
+《水污染防治法》第八十二条、《生态环境行政处罚裁量基准（试行）》
+
+是否需要调整裁量幅度？`
+      break
+    default:
+      response = `感谢您的提问。我正在分析您的问题，请稍候...
+
+作为${selectedAgent.value.name}，我可以为您提供以下帮助：
+- 案件综合评估
+- 法律问题咨询
+- 证据链分析
+- 处罚裁量建议
+
+请告诉我您具体需要什么帮助？`
+  }
+
+  isTyping.value = false
+  addMessage('agent', response, selectedAgent.value.id, selectedAgent.value.name)
+}
+
+const useSuggestion = (suggestion: string) => {
+  inputMessage.value = suggestion
+}
+
+const resetChat = () => {
+  messages.value = []
+}
+
+const startNewReview = () => {
+  resetChat()
+  const greeting = `我已准备好协助您进行案件审查。请问您需要进行哪方面的审查工作？
+
+建议步骤：
+1. 📋 上传或选择案卷
+2. ⚖️ 合法性审查
+3. 📊 规范性评分
+4. 📝 综合评估
+5. 📄 生成报告`
+
+  addMessage('agent', greeting, 'comprehensive', '综合评估师')
 }
 
 const formatTime = (date: Date) => {
@@ -445,21 +597,22 @@ const renderMarkdown = (content: string) => {
   return md.render(content)
 }
 
-const getStepClass = (status: string) => {
-  if (status === 'completed') return 'bg-green-500 text-white'
-  if (status === 'running') return 'bg-primary-500 text-white'
-  return 'bg-gray-200 text-gray-600'
+const scrollToBottom = async () => {
+  await nextTick()
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+  }
 }
 
-const getStatusClass = (status: string) => {
-  if (status === 'running') return 'bg-green-100 text-green-700'
-  if (status === 'waiting') return 'bg-yellow-100 text-yellow-700'
-  return 'bg-gray-100 text-gray-600'
-}
-
-const getStatusText = (status: string) => {
-  if (status === 'running') return '运行中'
-  if (status === 'waiting') return '等待中'
-  return '空闲'
-}
+onMounted(() => {
+  selectedAgent.value = agents.value[0]
+  startNewReview()
+})
 </script>
+
+<style scoped>
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+</style>

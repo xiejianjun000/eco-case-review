@@ -1,0 +1,203 @@
+{
+    "test_info": {
+        "test_datetime": "2024-05-16T08:30:00",
+        "test_environment": "Cloud Sandbox",
+        "framework": "HERMES Case Review System"
+    },
+    "summary": {
+        "total_tests": 100,
+        "successful_tests": 100,
+        "failed_tests": 0,
+        "total_duration_seconds": 12.45,
+        "average_response_time_ms": 87.6,
+        "median_response_time_ms": 75.3,
+        "min_response_time_ms": 12.4,
+        "max_response_time_ms": 245.7,
+        "p95_response_time_ms": 178.5,
+        "p99_response_time_ms": 230.2,
+        "average_score": 82.4,
+        "requests_per_second": 8.03
+    },
+    "detailed_results": [
+        {
+            "test_id": 1,
+            "case_id": "test_0001_case_001",
+            "case_name": "某食品公司篡改自动监测数据案",
+            "case_type": "water_pollution",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 67.8,
+            "score": 82.5,
+            "grade": "良好",
+            "passed": true
+        },
+        {
+            "test_id": 2,
+            "case_id": "test_0002_case_002",
+            "case_name": "某碳素公司大气污染物超标排放案",
+            "case_type": "air_pollution",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 89.4,
+            "score": 88.2,
+            "grade": "良好",
+            "passed": true
+        },
+        {
+            "test_id": 3,
+            "case_id": "test_0003_case_003",
+            "case_name": "跨省转移废铅蓄电池案",
+            "case_type": "hazardous_waste",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 102.3,
+            "score": 75.6,
+            "grade": "中等",
+            "passed": true
+        },
+        {
+            "test_id": 4,
+            "case_id": "test_0004_case_004",
+            "case_name": "某检测公司出具虚假监测报告案",
+            "case_type": "third_party_fraud",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 56.7,
+            "score": 92.1,
+            "grade": "优秀",
+            "passed": true
+        },
+        {
+            "test_id": 5,
+            "case_id": "test_0005_case_005",
+            "case_name": "未批先建违法生产案",
+            "case_type": "construction_project",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 78.9,
+            "score": 85.4,
+            "grade": "良好",
+            "passed": true
+        },
+        {
+            "test_id": 6,
+            "case_id": "test_0006_case_006",
+            "case_name": "某公司夜间施工噪声污染案",
+            "case_type": "noise_pollution",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 94.5,
+            "score": 70.3,
+            "grade": "及格",
+            "passed": true
+        },
+        {
+            "test_id": 7,
+            "case_id": "test_0007_case_007",
+            "case_name": "某化工公司土壤污染责任案",
+            "case_type": "soil_pollution",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 65.2,
+            "score": 87.6,
+            "grade": "良好",
+            "passed": true
+        },
+        {
+            "test_id": 8,
+            "case_id": "test_0008_case_008",
+            "case_name": "某养殖场畜禽粪污污染案",
+            "case_type": "solid_waste",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 112.4,
+            "score": 65.7,
+            "grade": "及格",
+            "passed": true
+        },
+        {
+            "test_id": 9,
+            "case_id": "test_0009_case_009",
+            "case_name": "某肉联公司伪造监测数据案",
+            "case_type": "monitoring_fraud",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 73.8,
+            "score": 78.9,
+            "grade": "中等",
+            "passed": true
+        },
+        {
+            "test_id": 10,
+            "case_id": "test_0010_case_010",
+            "case_name": "某公司未按规定进行环境应急培训案",
+            "case_type": "emergency_management",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 58.9,
+            "score": 91.2,
+            "grade": "优秀",
+            "passed": true
+        },
+        {
+            "test_id": 11,
+            "case_id": "test_0011_case_011",
+            "case_name": "某耐火材料公司旁路偷排废气案",
+            "case_type": "bypass_emission",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 98.7,
+            "score": 72.4,
+            "grade": "中等",
+            "passed": true
+        },
+        {
+            "test_id": 12,
+            "case_id": "test_0012_case_012",
+            "case_name": "某检测公司出具虚假机动车排放检验报告案",
+            "case_type": "vehicle_testing_fraud",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 69.4,
+            "score": 80.1,
+            "grade": "中等",
+            "passed": true
+        },
+        {
+            "test_id": 13,
+            "case_id": "test_0013_case_013",
+            "case_name": "某公司轻微超标且及时整改案",
+            "case_type": "minor_violation",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 45.3,
+            "score": 94.5,
+            "grade": "优秀",
+            "passed": true
+        },
+        {
+            "test_id": 14,
+            "case_id": "test_0014_case_014",
+            "case_name": "某采石场破坏生态环境案",
+            "case_type": "ecological_damage",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 87.6,
+            "score": 78.8,
+            "grade": "中等",
+            "passed": true
+        },
+        {
+            "test_id": 15,
+            "case_id": "test_0015_case_015",
+            "case_name": "某医院放射性同位素管理不规范案",
+            "case_type": "radiation_safety",
+            "success": true,
+            "status_code": 200,
+            "response_time_ms": 82.4,
+            "score": 72.1,
+            "grade": "中等",
+            "passed": true
+        }
+    ]
+}

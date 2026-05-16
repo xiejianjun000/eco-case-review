@@ -1,0 +1,376 @@
+<template>
+  <div class="p-6">
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">配置管理</h2>
+      <p class="text-gray-500 mt-1">系统配置、用户设置、API管理等</p>
+    </div>
+
+    <div class="flex gap-6">
+      <div class="w-64 bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="p-4 border-b border-gray-200">
+          <h3 class="font-semibold text-gray-800">设置分类</h3>
+        </div>
+        <nav class="p-2">
+          <button
+            v-for="menu in menuItems"
+            :key="menu.id"
+            @click="activeTab = menu.id"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-left"
+            :class="activeTab === menu.id ? 'bg-primary-50 text-primary-600 font-medium' : 'text-gray-700 hover:bg-gray-50'"
+          >
+            <span class="text-lg">{{ menu.icon }}</span>
+            <span>{{ menu.name }}</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="flex-1">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div v-if="activeTab === 'general'">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">通用设置</h3>
+            
+            <div class="space-y-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">系统名称</label>
+                <input
+                  v-model="settings.general.systemName"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">系统主题</label>
+                <div class="grid grid-cols-3 gap-3">
+                  <button
+                    v-for="theme in themes"
+                    :key="theme.id"
+                    @click="settings.general.theme = theme.id"
+                    class="p-4 border-2 rounded-lg transition-all"
+                    :class="settings.general.theme === theme.id ? 'border-primary-500' : 'border-gray-200 hover:border-gray-300'"
+                  >
+                    <div class="w-full h-12 rounded mb-2" :class="theme.bgColor"></div>
+                    <div class="text-sm font-medium text-gray-700">{{ theme.name }}</div>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">语言</label>
+                <select
+                  v-model="settings.general.language"
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500"
+                >
+                  <option value="zh-CN">简体中文</option>
+                  <option value="en-US">English</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">时区</label>
+                <select
+                  v-model="settings.general.timezone"
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500"
+                >
+                  <option value="Asia/Shanghai">亚洲/上海 (GMT+8)</option>
+                  <option value="UTC">UTC</option>
+                </select>
+              </div>
+
+              <div class="pt-4">
+                <button
+                  @click="saveSettings"
+                  class="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                >
+                  保存设置
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="activeTab === 'api'">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-lg font-semibold text-gray-800">API 配置</h3>
+              <button class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                新增 API
+              </button>
+            </div>
+
+            <div class="space-y-4">
+              <div
+                v-for="api in settings.apiKeys"
+                :key="api.id"
+                class="p-4 border border-gray-200 rounded-lg"
+              >
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-medium text-gray-800">{{ api.name }}</div>
+                    <div class="text-sm text-gray-500 mt-1">{{ api.provider }}</div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="px-2 py-1 text-xs rounded-full"
+                      :class="api.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'"
+                    >
+                      {{ api.active ? '启用' : '禁用' }}
+                    </span>
+                    <button class="p-1.5 hover:bg-gray-100 rounded transition-colors">
+                      <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+                    <span class="text-gray-400">Key:</span>
+                    <span class="font-mono text-sm text-gray-600">{{ api.maskedKey }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="activeTab === 'models'">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">模型配置</h3>
+
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center text-white font-bold">
+                    G
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-800">GPT-4</div>
+                    <div class="text-sm text-gray-500">OpenAI · 8K context</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4">
+                  <span class="text-sm text-gray-500">$0.03/1K tokens</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                    D
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-800">DeepSeek-V3</div>
+                    <div class="text-sm text-gray-500">DeepSeek · 128K context</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4">
+                  <span class="text-sm text-gray-500">$0.001/1K tokens</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="activeTab === 'notifications'">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">通知设置</h3>
+
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <div class="font-medium text-gray-800">评查完成通知</div>
+                  <div class="text-sm text-gray-500">当案件评查完成时发送通知</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                </label>
+              </div>
+
+              <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <div class="font-medium text-gray-800">错误提醒</div>
+                  <div class="text-sm text-gray-500">系统异常时发送提醒</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                </label>
+              </div>
+
+              <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <div class="font-medium text-gray-800">周报摘要</div>
+                  <div class="text-sm text-gray-500">每周发送评查情况摘要</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="activeTab === 'security'">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">安全设置</h3>
+
+            <div class="space-y-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">修改密码</label>
+                <div class="space-y-3">
+                  <input
+                    type="password"
+                    placeholder="当前密码"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500"
+                  />
+                  <input
+                    type="password"
+                    placeholder="新密码"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500"
+                  />
+                  <input
+                    type="password"
+                    placeholder="确认新密码"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500"
+                  />
+                </div>
+                <button class="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm">
+                  更新密码
+                </button>
+              </div>
+
+              <div class="pt-6 border-t border-gray-200">
+                <h4 class="font-medium text-gray-800 mb-3">会话安全</h4>
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <div class="font-medium text-gray-800">两步验证</div>
+                      <div class="text-sm text-gray-500">增强账户安全</div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" class="sr-only peer">
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <div class="font-medium text-gray-800">会话超时</div>
+                      <div class="text-sm text-gray-500">30分钟无操作自动登出</div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" checked class="sr-only peer">
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="activeTab === 'about'">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">关于系统</h3>
+
+            <div class="text-center py-8">
+              <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center text-white text-4xl mx-auto mb-4">
+                📋
+              </div>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">生态环境案卷评查系统</h2>
+              <p class="text-gray-500 mb-6">基于 HERMES 智能体的专业评查平台</p>
+              
+              <div class="inline-flex gap-2 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm mb-8">
+                版本 {{ aboutInfo.version }}
+              </div>
+
+              <div class="text-left max-w-md mx-auto space-y-4">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <span class="text-gray-500">发布日期</span>
+                  <span class="text-gray-800">{{ aboutInfo.releaseDate }}</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <span class="text-gray-500">许可证</span>
+                  <span class="text-gray-800">{{ aboutInfo.license }}</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <span class="text-gray-500">技术支持</span>
+                  <span class="text-gray-800">{{ aboutInfo.support }}</span>
+                </div>
+              </div>
+
+              <div class="mt-8 flex items-center justify-center gap-4">
+                <a href="#" class="text-primary-600 hover:text-primary-700 text-sm">更新日志</a>
+                <span class="text-gray-300">|</span>
+                <a href="#" class="text-primary-600 hover:text-primary-700 text-sm">帮助文档</a>
+                <span class="text-gray-300">|</span>
+                <a href="#" class="text-primary-600 hover:text-primary-700 text-sm">隐私政策</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue'
+
+const activeTab = ref('general')
+
+const menuItems = ref([
+  { id: 'general', name: '通用设置', icon: '⚙️' },
+  { id: 'api', name: 'API 配置', icon: '🔑' },
+  { id: 'models', name: '模型配置', icon: '🤖' },
+  { id: 'notifications', name: '通知设置', icon: '🔔' },
+  { id: 'security', name: '安全设置', icon: '🛡️' },
+  { id: 'about', name: '关于', icon: 'ℹ️' }
+])
+
+const settings = reactive({
+  general: {
+    systemName: '生态环境案卷评查系统',
+    theme: 'default',
+    language: 'zh-CN',
+    timezone: 'Asia/Shanghai'
+  },
+  apiKeys: [
+    {
+      id: 1,
+      name: 'OpenAI API',
+      provider: 'OpenAI',
+      maskedKey: 'sk-...xxxx',
+      active: true
+    },
+    {
+      id: 2,
+      name: 'DeepSeek API',
+      provider: 'DeepSeek',
+      maskedKey: 'sk-...xxxx',
+      active: true
+    }
+  ]
+})
+
+const themes = ref([
+  { id: 'default', name: '默认', bgColor: 'bg-gradient-to-br from-blue-500 to-blue-600' },
+  { id: 'dark', name: '深色', bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900' },
+  { id: 'green', name: '绿色', bgColor: 'bg-gradient-to-br from-green-500 to-green-600' }
+])
+
+const aboutInfo = ref({
+  version: '1.0.0',
+  releaseDate: '2024-05-16',
+  license: 'MIT License',
+  support: 'support@hermes-ai.com'
+})
+
+const saveSettings = () => {
+  alert('设置已保存！')
+}
+</script>
