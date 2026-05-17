@@ -1,0 +1,101 @@
+{
+  "knowledge_base": {
+    "name": "生态环境案卷评查知识库",
+    "version": "1.0.0",
+    "created_date": "2024-05-16",
+    "source": "WPS知识库"
+  },
+  "documents": [
+    {
+      "id": "KB001",
+      "category": "评查细则",
+      "title": "生态环境行政执法案卷评查细则（2024年版）",
+      "filename": "生态环境行政执法案卷评查细则（2024年版）.pdf",
+      "path": "knowledge/评查细则/",
+      "size": "625KB",
+      "description": "生态环境部发布的行政执法案卷评查细则，包含25项评查标准",
+      "key_topics": [
+        "案卷评查标准",
+        "25项评查条件",
+        "一票否决项",
+        "合法性审查",
+        "规范性审查"
+      ],
+      "source_kuid": "0lcanh6YdbT2rK"
+    },
+    {
+      "id": "KB002",
+      "category": "法律法规",
+      "title": "生态环境保护法律法规汇编（2026.5）",
+      "filename": "生态环境保护法律法规汇编（2026.5）.pdf",
+      "path": "knowledge/法律法规/",
+      "size": "33MB",
+      "description": "最新生态环境保护法律法规汇编，包含宪法、法律、行政法规等",
+      "key_topics": [
+        "环境保护法",
+        "水污染防治法",
+        "大气污染防治法",
+        "固体废物污染环境防治法",
+        "噪声污染防治法",
+        "土壤污染防治法"
+      ],
+      "source_kuid": "0lcilV7Cn4Ovdw"
+    },
+    {
+      "id": "KB003",
+      "category": "复函汇编",
+      "title": "生态环境部复函汇编（2026.3）",
+      "filename": "生态环境部复函汇编（2026.3）.pdf",
+      "path": "knowledge/复函汇编/",
+      "size": "38MB",
+      "description": "生态环境部官方复函汇编，用于解决执法中的具体问题",
+      "key_topics": [
+        "执法问题解答",
+        "法规适用指导",
+        "裁量基准",
+        "违法认定"
+      ],
+      "source_kuid": "0lcoVqctezlpK4"
+    },
+    {
+      "id": "KB004",
+      "category": "部长信箱",
+      "title": "生态环境部部长信箱回复汇编（2026.1）",
+      "filename": "生态环境部部长信箱回复汇编（2026.1）.pdf",
+      "path": "knowledge/部长信箱/",
+      "size": "12MB",
+      "description": "生态环境部部长信箱回复汇编，包含常见问题解答",
+      "key_topics": [
+        "政策解读",
+        "常见问题",
+        "执法指导",
+        "法规咨询"
+      ],
+      "source_kuid": "0lcn0h9Q1pbWn0"
+    }
+  ],
+  "total_documents": 4,
+  "total_size": "83.6MB",
+  "categories": [
+    {
+      "name": "评查细则",
+      "description": "案卷评查的标准和规范",
+      "document_count": 1
+    },
+    {
+      "name": "法律法规",
+      "description": "生态环境保护相关法律法规",
+      "document_count": 1
+    },
+    {
+      "name": "复函汇编",
+      "description": "生态环境部官方复函",
+      "document_count": 1
+    },
+    {
+      "name": "部长信箱",
+      "description": "部长信箱回复汇编",
+      "document_count": 1
+    }
+  ]
+}
