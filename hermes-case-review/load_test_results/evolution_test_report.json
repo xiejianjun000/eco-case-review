@@ -1,0 +1,317 @@
+{
+  "test_suite": "HERMES智能体进化与学习能力测试",
+  "start_time": "2026-05-17T01:55:17.514095",
+  "memory_system": {
+    "test_name": "记忆系统测试",
+    "success": false,
+    "details": [
+      {
+        "sub_test": "记忆存储",
+        "success": true,
+        "data": {
+          "case_id": "test_memory_001",
+          "content": "测试记忆内容",
+          "timestamp": "2026-05-17T01:55:17.514150",
+          "tags": [
+            "测试",
+            "记忆系统"
+          ]
+        }
+      },
+      {
+        "sub_test": "记忆检索",
+        "success": false,
+        "exact_match": {
+          "case_id": "case_001",
+          "content": "水污染案件"
+        },
+        "fuzzy_results": [
+          "memory_001",
+          "memory_002",
+          "memory_003"
+        ]
+      },
+      {
+        "sub_test": "记忆更新",
+        "success": true,
+        "old_version": 1,
+        "new_version": 2
+      },
+      {
+        "sub_test": "记忆持久化",
+        "success": true
+      }
+    ]
+  },
+  "self_learning_system": {
+    "test_name": "自我学习系统测试",
+    "success": true,
+    "details": [
+      {
+        "sub_test": "从评查结果学习",
+        "success": true,
+        "learning_data": {
+          "problems_learned": 1,
+          "normative_issues": 1,
+          "score_recorded": 78.5
+        }
+      },
+      {
+        "sub_test": "问题模式识别",
+        "success": true,
+        "frequent_issues": [
+          {
+            "issue": "序号14: 未告知程序性权利",
+            "count": 15
+          },
+          {
+            "issue": "序号17: 未经集体讨论",
+            "count": 12
+          },
+          {
+            "issue": "文书格式不规范",
+            "count": 20
+          },
+          {
+            "issue": "证据链不完整",
+            "count": 10
+          }
+        ]
+      },
+      {
+        "sub_test": "评分经验积累",
+        "success": true,
+        "score_history": {
+          "水污染": {
+            "total": 50,
+            "avg_score": 82.3,
+            "scores": [
+              85,
+              78,
+              90,
+              76
+            ]
+          },
+          "大气污染": {
+            "total": 35,
+            "avg_score": 79.5,
+            "scores": [
+              82,
+              75,
+              88
+            ]
+          },
+          "固废污染": {
+            "total": 25,
+            "avg_score": 85.2,
+            "scores": [
+              88,
+              82,
+              90
+            ]
+          }
+        },
+        "total_cases": 110
+      },
+      {
+        "sub_test": "改进建议生成",
+        "success": true,
+        "suggestions": [
+          "当前评分(72.0)低于同类案件平均分(82.3)",
+          "注意常见问题：序号14未告知程序性权利",
+          "建议参考同类案件平均罚款金额"
+        ]
+      }
+    ]
+  },
+  "evolution_system": {
+    "test_name": "进化系统测试",
+    "success": true,
+    "details": [
+      {
+        "sub_test": "新技能生成",
+        "success": true,
+        "new_skill": {
+          "skill_id": "skill_new_001",
+          "name": "新型污染源识别技能",
+          "description": "基于深度学习的污染源自动识别",
+          "trigger_conditions": [
+            "案件类型=新型污染",
+            "涉及AI分析"
+          ],
+          "capabilities": [
+            "自动识别污染源",
+            "模式匹配"
+          ],
+          "confidence": 0.85,
+          "generated_from": "ai_analyzer",
+          "timestamp": "2026-05-17T01:55:17.514627"
+        }
+      },
+      {
+        "sub_test": "技能迭代优化",
+        "success": true,
+        "versions": [
+          {
+            "version": "v1.0",
+            "accuracy": 0.75,
+            "date": "2024-01-01"
+          },
+          {
+            "version": "v1.1",
+            "accuracy": 0.8,
+            "date": "2024-02-15"
+          },
+          {
+            "version": "v1.2",
+            "accuracy": 0.85,
+            "date": "2024-03-20"
+          },
+          {
+            "version": "v1.3",
+            "accuracy": 0.92,
+            "date": "2024-05-01"
+          }
+        ],
+        "improvement": 22.66666666666667
+      },
+      {
+        "sub_test": "技能组合进化",
+        "success": true,
+        "composed_skill": {
+          "name": "智能裁量综合分析",
+          "components": [
+            "证据链分析",
+            "裁量计算",
+            "法律引用"
+          ],
+          "new_capabilities": [
+            "多维度裁量分析",
+            "案例智能匹配",
+            "风险预警"
+          ],
+          "effectiveness": 0.88
+        }
+      },
+      {
+        "sub_test": "进化闭环验证",
+        "success": true,
+        "closed_loop": {
+          "step_1_practice": "执行评查任务",
+          "step_2_collect": "收集反馈数据",
+          "step_3_analyze": "分析问题模式",
+          "step_4_generate": "生成改进方案",
+          "step_5_implement": "实施技能更新",
+          "step_6_validate": "验证改进效果",
+          "iterations": 5,
+          "improvement_rate": 0.23
+        }
+      }
+    ]
+  },
+  "agent_capabilities": {
+    "test_name": "智能体能力测试",
+    "success": false,
+    "agent_results": {
+      "legality_reviewer": {
+        "agent_id": "legality_reviewer",
+        "agent_name": "合法性审查员",
+        "specialty": "25项一票否决条件检查",
+        "test_cases": 5,
+        "passed_cases": 5,
+        "failed_cases": 0,
+        "capabilities": {
+          "学习能力": 1.0,
+          "进化能力": 1.0,
+          "记忆能力": 0.8088759590957615,
+          "适应能力": 0.8956706535466036,
+          "准确度": 1.0
+        },
+        "success": true
+      },
+      "discretion_calculator": {
+        "agent_id": "discretion_calculator",
+        "agent_name": "裁量计算师",
+        "specialty": "智能裁量与合理性分析",
+        "test_cases": 3,
+        "passed_cases": 3,
+        "failed_cases": 0,
+        "capabilities": {
+          "学习能力": 1.0,
+          "进化能力": 1.0,
+          "记忆能力": 0.9403009529966249,
+          "适应能力": 0.8398614033755909,
+          "准确度": 1.0
+        },
+        "success": true
+      },
+      "evidence_analyzer": {
+        "agent_id": "evidence_analyzer",
+        "agent_name": "证据链分析师",
+        "specialty": "证据完整性验证",
+        "test_cases": 3,
+        "passed_cases": 1,
+        "failed_cases": 2,
+        "capabilities": {
+          "学习能力": 0.40322826776780457,
+          "进化能力": 0.3666666666666667,
+          "记忆能力": 0.7727337725660574,
+          "适应能力": 0.8971646048281388,
+          "准确度": 0.3333333333333333
+        },
+        "success": false
+      },
+      "normative_scoring": {
+        "agent_id": "normative_scoring",
+        "agent_name": "规范性评分员",
+        "specialty": "文书规范性检查",
+        "test_cases": 2,
+        "passed_cases": 2,
+        "failed_cases": 0,
+        "capabilities": {
+          "学习能力": 1.0,
+          "进化能力": 1.0,
+          "记忆能力": 0.7884244581336016,
+          "适应能力": 0.7388322323318696,
+          "准确度": 1.0
+        },
+        "success": true
+      },
+      "ai_analyzer": {
+        "agent_id": "ai_analyzer",
+        "agent_name": "AI智能分析师",
+        "specialty": "深度学习与模式识别",
+        "test_cases": 2,
+        "passed_cases": 2,
+        "failed_cases": 0,
+        "capabilities": {
+          "学习能力": 1.0,
+          "进化能力": 1.0,
+          "记忆能力": 0.7535511254410255,
+          "适应能力": 0.8769575726994329,
+          "准确度": 1.0
+        },
+        "success": true
+      },
+      "report_generator": {
+        "agent_id": "report_generator",
+        "agent_name": "报告生成器",
+        "specialty": "自动生成评查报告",
+        "test_cases": 2,
+        "passed_cases": 2,
+        "failed_cases": 0,
+        "capabilities": {
+          "学习能力": 1.0,
+          "进化能力": 1.0,
+          "记忆能力": 0.761301509066813,
+          "适应能力": 0.8217299076553635,
+          "准确度": 1.0
+        },
+        "success": true
+      }
+    }
+  },
+  "end_time": "2026-05-17T01:55:19.216757",
+  "total_duration": 1.7026617527008057,
+  "overall_success": false
+}
