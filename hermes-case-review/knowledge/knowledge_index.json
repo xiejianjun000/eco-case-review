@@ -72,10 +72,42 @@
         "法规咨询"
       ],
       "source_kuid": "0lcn0h9Q1pbWn0"
+    },
+    {
+      "id": "KB005",
+      "category": "湖南省资料",
+      "title": "湖南省生态环境保护行政处罚裁量权基准规定（2021版）",
+      "filename": "湖南省生态环境保护行政处罚裁量权基准规定（2021版）.pdf",
+      "path": "knowledge/湖南省资料/",
+      "size": "170KB",
+      "description": "湖南省生态环境行政处罚裁量权基准规定，明确裁量标准和计算方法",
+      "key_topics": [
+        "裁量基准",
+        "处罚标准",
+        "裁量系数",
+        "湖南省规定"
+      ],
+      "source_kuid": "0lctvao5YlrYah"
+    },
+    {
+      "id": "KB006",
+      "category": "湖南省资料",
+      "title": "湖南省生态环境行政处罚相关文书范本（2024年版）",
+      "filename": "湖南省生态环境行政处罚相关文书范本（2024年版）.pdf",
+      "path": "knowledge/湖南省资料/",
+      "size": "5.6MB",
+      "description": "湖南省生态环境行政处罚标准化文书范本，包含各类执法文书模板",
+      "key_topics": [
+        "行政处罚文书",
+        "范本模板",
+        "执法规范",
+        "湖南省规定"
+      ],
+      "source_kuid": "0lcvh3crXpbpoK"
     }
   ],
-  "total_documents": 4,
-  "total_size": "83.6MB",
+  "total_documents": 6,
+  "total_size": "89.3MB",
   "categories": [
     {
       "name": "评查细则",
@@ -93,9 +125,9 @@
       "document_count": 1
     },
     {
-      "name": "部长信箱",
-      "description": "部长信箱回复汇编",
-      "document_count": 1
+      "name": "湖南省资料",
+      "description": "湖南省生态环境行政处罚相关资料",
+      "document_count": 2
     }
   ]
 }
