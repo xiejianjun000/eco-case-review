@@ -1,0 +1,59 @@
+{
+  "case_id": "case_2024_hunan_001",
+  "case_number": "湘环罚〔2024〕15号",
+  "case_name": "鑫顺建材有限公司超标排放大气污染物案",
+  "case_type": "一般行政处罚",
+  "respondent": "鑫顺建材有限公司",
+  "organizing_unit": "湖南省某市生态环境局",
+  "case_origin": "日常监督检查",
+  "violation_date": "2024-03-15",
+  "decision_date": "2024-04-20",
+  "violation": "超标排放大气污染物（二氧化硫排放浓度超标0.8倍）",
+  "penalty_basis": "《大气污染防治法》第九十九条第（二）项",
+  "penalty_decision": "罚款人民币80万元",
+  "penalty_amount": 800000,
+  "discretion_level": "从轻",
+  "discretion_factors": ["主动配合调查", "初次违法", "已整改"],
+  "documents": {
+    "现场检查笔录": {
+      "date": "2024-03-15",
+      "location": "鑫顺建材有限公司厂区",
+      "inspectors": ["张三", "李四"],
+      "findings": "现场检查时该公司正在生产，废气处理设施正常运行，但在线监测数据显示二氧化硫排放浓度为280mg/m³，超过排放标准（标准限值150mg/m³）。"
+    },
+    "调查询问笔录": {
+      "date": "2024-03-16",
+      "respondent": "王五（公司环保负责人）",
+      "content": "承认超标排放事实，原因系设备故障，已于当日修复。"
+    },
+    "监测报告": {
+      "report_number": "HJ-2024-0315-001",
+      "date": "2024-03-15",
+      "institution": "某市环境监测中心",
+      "conclusion": "二氧化硫排放浓度280mg/m³，超标0.87倍"
+    },
+    "行政处罚决定书": {
+      "date": "2024-04-20",
+      "penalty_amount": 800000,
+      "basis": "《大气污染防治法》第九十九条第（二）项"
+    }
+  },
+  "evidence_chain": {
+    "sampling_procedure": "规范，有取样记录和现场检查笔录记载",
+    "monitoring_legality": "由具有资质的环境监测机构出具",
+    "evidence_consistency": "证据之间相互印证，形成完整证据链"
+  },
+  "procedural_check": {
+    "preliminary_approval": true,
+    "case_filing": true,
+    "service_notice": true,
+    "hearing_rights": true,
+    "decision_approval": true,
+    "legal_review": true,
+    "public_disclosure": true
+  },
+  "legal_basis": [
+    "《中华人民共和国大气污染防治法》第九十九条",
+    "《湖南省生态环境保护行政处罚裁量权基准规定》"
+  ]
+}
